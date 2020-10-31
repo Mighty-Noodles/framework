@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 import { apiRoutes } from './routes/api';
 
@@ -10,6 +11,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
+app.use(cors()); // TODO: remove me if not needed
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 
