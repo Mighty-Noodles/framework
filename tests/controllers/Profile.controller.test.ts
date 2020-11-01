@@ -1,11 +1,12 @@
 import { ProfileController } from '../../src/controllers/Profile.controller';
 import { User } from '../../src/models/User';
+import { resetDatabase } from '../utils';
 
 describe('ProfileController', () => {
   let user;
 
   beforeEach(async () => {
-    await User.query().delete();
+    await resetDatabase();
     user = await User.query().insertAndFetch(
       { email: 'user@email.com', first_name: 'User', last_name: 'One', hash: '123' },
     )

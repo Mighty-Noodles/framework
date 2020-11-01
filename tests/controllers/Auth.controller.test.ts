@@ -1,13 +1,13 @@
 import { AuthController } from '../../src/controllers/Auth.controller';
 import { User } from '../../src/models/User';
 import { generateJwt } from '../constants';
-import { expectCountChangedBy } from '../utils';
+import { expectCountChangedBy, resetDatabase } from '../utils';
 
 describe('AuthController', () => {
   let user;
 
   beforeEach(async () => {
-    await User.query().delete();
+    await resetDatabase();
     user = await User.query().insertAndFetch(
       { email: 'user@email.com', first_name: 'User', last_name: 'One', hash: '123' },
     )

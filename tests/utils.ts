@@ -1,4 +1,5 @@
 import { Model } from '../src/models/Model';
+import { User } from '../src/models/User';
 
 export async function countModel(ModelClass: typeof Model): Promise<number> {
   return Number((await ModelClass.query<any>().count())[0].count);
@@ -12,4 +13,8 @@ export async function expectCountChangedBy(ModelClass: typeof Model, cb: () => v
   const finalCount = await countModel(ModelClass);
 
   expect(finalCount).toEqual(initCount + count);
+}
+
+export async function resetDatabase(): Promise<void> {
+  await User.query().delete();
 }

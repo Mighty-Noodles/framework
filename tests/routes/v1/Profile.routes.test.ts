@@ -2,12 +2,13 @@ import request from 'supertest';
 import { User } from '../../../src/models/User';
 import { server } from '../../../src/server';
 import { jwtHeader } from '../../constants';
+import { resetDatabase } from '../../utils';
 
 describe('/profile route', () => {
   let testServer, user: User, jwt;
 
   beforeEach(async () => {
-    await User.query().delete();
+    await resetDatabase();
     user = await User.query().insertAndFetch(
       { email: 'user@email.com', first_name: 'User', last_name: 'One', hash: '123' },
     );

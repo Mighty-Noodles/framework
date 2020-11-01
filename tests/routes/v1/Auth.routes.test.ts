@@ -1,13 +1,15 @@
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
+
 import { User } from '../../../src/models/User';
 import { server } from '../../../src/server';
 import { PASSWORD_HASH } from '../../constants';
-import { countModel } from '../../utils';
+import { countModel, resetDatabase } from '../../utils';
 
 describe('/auth route', () => {
   describe('POST /signup', () => {
     beforeEach(async () => {
-      await User.query().delete();
+      await resetDatabase();
     });
 
     test('creates and return user without hash', async (done) => {
@@ -39,9 +41,11 @@ describe('/auth route', () => {
   });
 
   describe('POST /signin', () => {
+    let user;
+
     beforeAll(async () => {
-      await User.query().delete();
-      await User.query().insert(
+      await resetDatabase();
+      user = await User.query().insert(
         { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH },
       )
     });
@@ -65,6 +69,10 @@ describe('/auth route', () => {
             token: expect.any(String),
           });
           expect(body.item.hash).not.toBeDefined();
+
+          const parsedToken: any = jwt.verify(body.token, process.env.JWT_SECRET);
+          expect(parsedToken.id).toEqual(user.id);
+          expect(parsedToken.email).toEqual('a@a.com');
 
           done(err);
         });
