@@ -10,11 +10,17 @@
     "test:setup": "TS_NODE_TRANSPILE_ONLY=true ts-node ./scripts/test.setup.ts",
     "db:migrate": "node-pg-migrate create",
     "db:migrate:up": "TS_NODE_TRANSPILE_ONLY=true ts-node ./scripts/migration/up.ts",
-    "db:migrate:down": "TS_NODE_TRANSPILE_ONLY=true ts-node ./scripts/migration/down.ts"
+    "db:migrate:down": "TS_NODE_TRANSPILE_ONLY=true ts-node ./scripts/migration/down.ts",
+    "build:server": "rm -rf ./server-build && tsc -p tsconfig.json --outDir server-build ",
+    "build": "yarn build:server",
+    "start:prod": "DEBUG=app:* node ./server-build/src/index.js"
+  },
+  "engines": {
+    "node": "12.18.4"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.8",
