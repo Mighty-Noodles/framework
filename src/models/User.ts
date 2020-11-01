@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Model } from './Model';
 
 export class User extends Model {
@@ -8,4 +9,8 @@ export class User extends Model {
   hash: string;
 
   static tableName = 'users';
+
+  toJson(): Omit<User, 'hash'> {
+    return _.omit(this, 'hash');
+  }
 }
