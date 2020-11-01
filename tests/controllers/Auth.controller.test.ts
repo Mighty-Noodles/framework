@@ -1,16 +1,10 @@
 import { AuthController } from '../../src/controllers/Auth.controller';
 import { User } from '../../src/models/User';
-import { generateJwt } from '../constants';
 import { expectCountChangedBy, resetDatabase } from '../utils';
 
 describe('AuthController', () => {
-  let user;
-
   beforeEach(async () => {
     await resetDatabase();
-    user = await User.query().insertAndFetch(
-      { email: 'user@email.com', first_name: 'User', last_name: 'One', hash: '123' },
-    )
   });
 
   describe('signup', () => {
@@ -43,8 +37,6 @@ describe('AuthController', () => {
       });
       expect(json.mock.calls[0][0].item.hash).not.toBeDefined();
     });
-
-    test.todo('sends confirmation email');
 
     describe('errors', () => {
       test('422 when missing params', async () => {
@@ -133,32 +125,6 @@ describe('AuthController', () => {
           message: 'Password must be at least 8 characters long',
         });
       });
-    });
-  });
-
-  describe('signin', () => {
-    test.skip('return user with token', async () => {
-      const status = jest.fn();
-      const json = jest.fn();
-      status.mockReturnValueOnce({ json });
-
-      const req: any = {
-        login: (user, opts, cb) => {},
-      };
-      const res: any = { status };
-
-      await AuthController.signin(req, res);
-
-      expect(status).toHaveBeenCalledWith(200);
-      expect(json).toHaveBeenCalledWith({ item: {
-        ...user.toJson(),
-        token: generateJwt(user),
-      }});
-      expect(json.mock.calls[0][0].item.hash).not.toBeDefined();
-    });
-
-    describe('on error', () => {
-      test.todo('return 401');
     });
   });
 });
