@@ -7,6 +7,7 @@ export class User extends Model {
   first_name: string;
   last_name: string;
   hash: string;
+  created_at: Date;
 
   static tableName = 'users';
 

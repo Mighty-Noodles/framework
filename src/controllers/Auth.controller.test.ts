@@ -1,6 +1,6 @@
-import { AuthController } from '../../src/controllers/Auth.controller';
-import { User } from '../../src/models/User';
-import { expectCountChangedBy, resetDatabase } from '../utils';
+import { AuthController } from '../controllers/Auth.controller';
+import { User } from '../models/User';
+import { expectCountChangedBy, resetDatabase, testService } from '../../tests/utils';
 
 describe('AuthController', () => {
   beforeEach(async () => {
@@ -56,7 +56,6 @@ describe('AuthController', () => {
           message: "Missing some props",
           missing_props: [
             'first_name',
-            'last_name',
             'email',
             'password',
             'password_confirmation',
@@ -124,6 +123,61 @@ describe('AuthController', () => {
         expect(json).toHaveBeenCalledWith({
           message: 'Password must be at least 8 characters long',
         });
+      });
+    });
+  });
+
+  describe('request_reset_password', () => {
+    beforeEach(async () => {
+      await resetDatabase();
+      await User.query().insert({ email: 'a@a.com', first_name: 'a', last_name: 'b', hash: '123' });
+    });
+
+    test('sends email with password reset request link', async() => {
+      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      const status = jest.fn();
+      const json = jest.fn();
+      status.mockReturnValueOnce({ json });
+
+      const req: any = { body: { email: 'a@a.com' } };
+      const res: any = { status };
+
+      await AuthController.request_reset_password(req, res);
+
+      const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
+      expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/password_reset`);
+
+      expect(status).toHaveBeenCalledWith(200);
+      expect(json).toHaveBeenCalledWith({
+        message: 'An email with a password reset link was sent to your inbox',
+      });
+    });
+
+    test('on error returns message', async () => {
+      const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject());
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      const status = jest.fn();
+      const json = jest.fn();
+      status.mockReturnValueOnce({ json });
+
+      const req: any = { body: { email: 'a@a.com' } };
+      const res: any = { status };
+
+      await AuthController.request_reset_password(req, res);
+
+      const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
+      expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/password_reset`);
+
+      expect(status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({
+        message: 'Error request reset password',
       });
     });
   });

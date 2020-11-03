@@ -5,12 +5,20 @@ import bcrypt from 'bcrypt';
 
 import { AuthRequest } from '../routes/v1/Auth';
 import { User } from '../models/User';
+import { PasswordService } from '../services/auth/Password.service';
+
+const MANDATORY_SIGNUP_FIELDS = [
+  'first_name',
+  'email',
+  'password',
+  'password_confirmation',
+];
 
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<any> => {
     const { first_name, last_name, email, password, password_confirmation } = req.body;
 
-    const missingProps = ['first_name', 'last_name', 'email', 'password', 'password_confirmation'].filter(prop => {
+    const missingProps = MANDATORY_SIGNUP_FIELDS.filter(prop => {
       if (!req.body[prop]) {
         return prop;
       }
@@ -85,5 +93,21 @@ export const AuthController = {
       }
     )(req, res, next);
   },
+
+  request_reset_password: async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    return PasswordService.requestReset({ email })
+      .then(() => {
+        res.status(200).json({ message: 'An email with a password reset link was sent to your inbox' });
+      })
+      .catch((err) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error request reset password', err);
+        }
+
+        res.status(500).json({ message: 'Error request reset password' });
+      });
+  }
 };
 

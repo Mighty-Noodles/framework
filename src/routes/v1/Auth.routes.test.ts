@@ -1,10 +1,10 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 
-import { User } from '../../../src/models/User';
-import { server } from '../../../src/server';
-import { PASSWORD_HASH } from '../../constants';
-import { countModel, resetDatabase } from '../../utils';
+import { User } from '../../models/User';
+import { server } from '../../server';
+import { PASSWORD_HASH } from '../../../tests/constants';
+import { countModel, resetDatabase, testService } from '../../../tests/utils';
 
 describe('/auth route', () => {
   describe('POST /signup', () => {
@@ -92,6 +92,38 @@ describe('/auth route', () => {
         .send({ email: 'a@a.com', password: 'WRONG' })
         .expect(401)
         .end(done);
+    });
+  });
+
+  describe('PUT /password/reset', () => {
+    test.todo('resets user password');
+  });
+
+  describe('POST /password/forgot', () => {
+    beforeAll(async () => {
+      await resetDatabase();
+      await User.query().insert(
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH },
+      )
+    });
+
+    test('responds with a message', async (done) => {
+      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      expect.hasAssertions();
+
+      request(server)
+        .post('/api/v1/password/forgot')
+        .send({ email: 'a@a.com' })
+        .expect(200)
+        .end((err, res) => {
+          expect(res.body).toEqual({ message: 'An email with a password reset link was sent to your inbox' })
+
+          done(err);
+        });
     });
   });
 });

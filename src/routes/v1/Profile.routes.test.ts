@@ -1,8 +1,8 @@
 import request from 'supertest';
-import { User } from '../../../src/models/User';
-import { server } from '../../../src/server';
-import { jwtHeader } from '../../constants';
-import { resetDatabase } from '../../utils';
+import { User } from '../../models/User';
+import { server } from '../../server';
+import { jwtHeader } from '../../../tests/constants';
+import { resetDatabase } from '../../../tests/utils';
 
 describe('/profile route', () => {
   let testServer, user: User, jwt;
