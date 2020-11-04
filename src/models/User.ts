@@ -6,12 +6,14 @@ export class User extends Model {
   email: string;
   first_name: string;
   last_name: string;
-  hash: string;
+
+  confirmed: boolean;
   created_at: Date;
+  hash: string;
 
   static tableName = 'users';
 
-  toJson(): Omit<User, 'hash'> {
-    return _.omit(this, 'hash');
+  toJson(): Pick<User, 'id' | 'email' | 'first_name' | 'last_name'> {
+    return _.pick(this, 'id', 'email', 'first_name', 'last_name');
   }
 }

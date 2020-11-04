@@ -16,11 +16,16 @@ describe('/auth route', () => {
       expect.hasAssertions();
       const initialCount = await countModel(User);
 
+      const sendRawEmail = jest.fn().mockReturnValue(Promise.resolve())
+      testService({
+        Email: { sendRawEmail },
+      });
+
       request(server)
         .post('/api/v1/signup')
         .send({ email: 'a@a.com', first_name: 'a', last_name: 'b', password: 'StR0NGP@SS!', password_confirmation: 'StR0NGP@SS!' })
         .expect(200)
-        .expect(async (res) => {
+        .end(async (err, res) => {
           const { body } = res;
           expect(body).toMatchObject({
             item: {
@@ -29,24 +34,26 @@ describe('/auth route', () => {
               first_name: 'a',
               last_name: 'b',
             },
-            token: expect.any(String),
           });
           expect(body.item.hash).not.toBeDefined();
           const finalCount = await countModel(User);
 
           expect(finalCount).toEqual(initialCount + 1);
-        })
-        .end(done);
+
+          expect(sendRawEmail).toHaveBeenCalled();
+
+          done(err);
+        });
     });
   });
 
   describe('POST /signin', () => {
-    let user;
+    let user: User;
 
     beforeAll(async () => {
       await resetDatabase();
       user = await User.query().insert(
-        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH },
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', confirmed: true, hash: PASSWORD_HASH },
       )
     });
 
@@ -92,6 +99,19 @@ describe('/auth route', () => {
         .send({ email: 'a@a.com', password: 'WRONG' })
         .expect(401)
         .end(done);
+    });
+
+    test('returns 403 if user is not confirmed', async (done) => {
+      await user.$query().update({ confirmed: false });
+
+      request(server)
+        .post('/api/v1/signin')
+        .send({ email: 'a@a.com', password: '123456' })
+        .expect(403)
+        .end((err, res) => {
+          expect(res.body).toEqual({ code: 402, message: 'Email not confirmed' });
+          done(err);
+        });
     });
   });
 

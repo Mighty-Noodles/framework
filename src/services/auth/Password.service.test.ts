@@ -42,7 +42,7 @@ describe('PasswordService', () => {
     });
 
     describe('when user does not exist', () => {
-      test('rejects request with NOT_FOUND status', async () => {
+      test('resolves empty', async () => {
         await expect(PasswordService.requestReset({ email: 'WRONG' })).resolves.toBeUndefined();
       });
     });

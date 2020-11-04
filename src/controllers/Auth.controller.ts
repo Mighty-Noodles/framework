@@ -1,64 +1,26 @@
 import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 
 import { AuthRequest } from '../routes/v1/Auth';
 import { User } from '../models/User';
 import { PasswordService } from '../services/auth/Password.service';
-
-const MANDATORY_SIGNUP_FIELDS = [
-  'first_name',
-  'email',
-  'password',
-  'password_confirmation',
-];
+import { SignupService } from '../services/auth/Signup.service';
 
 export const AuthController = {
-  signup: async (req: AuthRequest, res: Response): Promise<any> => {
-    const { first_name, last_name, email, password, password_confirmation } = req.body;
-
-    const missingProps = MANDATORY_SIGNUP_FIELDS.filter(prop => {
-      if (!req.body[prop]) {
-        return prop;
-      }
-    });
-
-    if (missingProps.length) {
-      return res.status(422).json({
-        message: 'Missing some props',
-        missing_props: missingProps,
+  signup: async (req: AuthRequest, res: Response): Promise<void> => {
+    return SignupService.signup(req.body)
+      .then((user: User) => {
+        res.status(200).json({
+          item: user.toJson(),
+        });
+      })
+      .catch((err) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error sending confirmation email', err);
+        }
+        res.status(err.code || 500).json(err.code ? err : { message: err.message });
       });
-    }
-
-    if (password !== password_confirmation) {
-      return res.status(422).json({
-        message: 'Password confirmation does not match',
-      });
-    }
-
-    if (password.length < 8) {
-      return res.status(422).json({
-        message: 'Password must be at least 8 characters long',
-      });
-    }
-
-    const exists = await User.query().findOne({ email });
-    if (exists) {
-      return res.status(422).json({
-        message: 'Email is already taken',
-      });
-    }
-
-    const hash = await bcrypt.hash(password, 10);
-    const user = await User.query().insert({ email, first_name, last_name, hash });
-
-    const token = jwt.sign({ user: user.id }, process.env.JWT_SECRET);
-
-    res.status(200).json({
-      item: user.toJson(),
-      token,
-    });
   },
 
   signin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -73,6 +35,10 @@ export const AuthController = {
 
           if (!user) {
             return res.status(401).end();
+          }
+
+          if (!user.confirmed) {
+            return res.status(403).json({ code: 402, message: 'Email not confirmed' });
           }
 
           req.login(
