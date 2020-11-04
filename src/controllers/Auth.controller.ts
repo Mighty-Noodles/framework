@@ -23,6 +23,24 @@ export const AuthController = {
       });
   },
 
+  confirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
+    return SignupService.confirmSignup({
+        id: req.params.id,
+        token: req.query.token as string,
+      })
+      .then((user) => {
+        res.status(200).json({
+          item: user.toJson(),
+        });
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error confirming subscription', error);
+        }
+        res.status(error?.code || 500).json({ code: error?.code || 500, message: error?.message });
+      });
+  },
+
   signin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     passport.authenticate(
       'login',

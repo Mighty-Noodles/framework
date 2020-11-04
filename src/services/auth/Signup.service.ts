@@ -17,6 +17,13 @@ interface SignupParams {
   password: string;
   password_confirmation: string
 }
+
+
+interface SignupConfirmationParams {
+  token: string;
+  id: string;
+}
+
 export const SignupService = {
   signup: async (params: SignupParams): Promise<User> => {
     const { first_name, last_name, email, password, password_confirmation } = params;
@@ -49,13 +56,30 @@ export const SignupService = {
       (existingUser && await existingUser.$query().updateAndFetch({ first_name, last_name, hash })) ||
       await User.query().insertAndFetch({ email, first_name, last_name, hash });
 
-    return ConfirmationService.requestConfirmation(user)
+    return ConfirmationService.sendSignupConfirmationEmail(user)
       .then(() => user)
       .catch((err) => {
         if (process.env.NODE_ENV !== 'test') {
           console.error('Error sending confirmation email', err);
         }
         return Promise.reject({ code: err.code || 500, message: 'Error sending confirmation email' });
+      });
+  },
+
+  confirmSignup: async (params: SignupConfirmationParams): Promise<User> => {
+    return ConfirmationService.verify(params.token, params.id)
+      .then(async user => {
+        if (user.confirmed) {
+          return user;
+        }
+
+        const updatedUser = await user.$query().updateAndFetch({ confirmed: true });
+        await ConfirmationService.sendSubscriptionCompletedEmail(updatedUser);
+
+        return updatedUser;
+      })
+      .catch(err => {
+        return Promise.reject({ code: err?.code || 500, message: err?.message || 'Error confirming subscription' });
       });
   },
 }

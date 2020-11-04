@@ -5,6 +5,7 @@ import { User } from '../../models/User';
 import { server } from '../../server';
 import { PASSWORD_HASH } from '../../../tests/constants';
 import { countModel, resetDatabase, testService } from '../../../tests/utils';
+import { ConfirmationService } from '../../services/auth/Confirmation.service';
 
 describe('/auth route', () => {
   describe('POST /signup', () => {
@@ -141,6 +142,39 @@ describe('/auth route', () => {
         .expect(200)
         .end((err, res) => {
           expect(res.body).toEqual({ message: 'An email with a password reset link was sent to your inbox' })
+
+          done(err);
+        });
+    });
+  });
+
+  describe('PUT /signup/:id/confirm', () => {
+    let user: User, token: string;
+
+    beforeAll(async () => {
+      await resetDatabase();
+      user = await User.query().insertAndFetch(
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH, confirmed: false }
+      );
+      token = ConfirmationService.tokenGenerator(user);
+    });
+
+    test('responds with a message', async (done) => {
+      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      expect.hasAssertions();
+
+      request(server)
+        .put(`/api/v1/signup/${user.id}/confirm?token=${token}`)
+        .expect(200)
+        .end(async (err, res) => {
+          expect(res.body).toEqual({ item: user.toJson() })
+
+          const confirmedUser = await User.query().findById(user.id);
+          expect(confirmedUser.confirmed).toBeTruthy();
 
           done(err);
         });
