@@ -1,7 +1,7 @@
 import { AuthController } from '../controllers/Auth.controller';
 import { User } from '../models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '../../tests/utils';
-import { ConfirmationService } from '../services/auth/Confirmation.service';
+import { ConfirmationService } from '../services/auth/SignupConfirmation.service';
 
 describe('AuthController', () => {
   beforeEach(async () => {

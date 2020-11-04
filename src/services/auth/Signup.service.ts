@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
-import { ConfirmationService } from '../../services/auth/Confirmation.service';
+import { ConfirmationService } from '../../services/auth/SignupConfirmation.service';
 
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',

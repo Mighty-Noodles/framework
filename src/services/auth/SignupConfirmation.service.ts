@@ -1,8 +1,8 @@
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
-import { User } from "../../models/User";
-import { buildRawEmail } from "../email/buildRawEmail";
-import { EmailService } from "../email/EmailService";
+import { User } from '../../models/User';
+import { buildRawEmail } from '../email/buildRawEmail';
+import { EmailService } from '../email/Email.service';
 
 const SIGNUP_CONFIRMATION_TEMPLATE = fs.readFileSync('./templates/emails/signup-confirmation.html', 'utf-8');
 const SUBSCRIPTION_COMPLETED_TEMPLATE = fs.readFileSync('./templates/emails/subscription-completed.html', 'utf-8');

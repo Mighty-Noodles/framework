@@ -1,7 +1,7 @@
 import { User } from '../../models/User';
 import { resetDatabase, testService } from '../../../tests/utils';
 
-import { ConfirmationService } from './Confirmation.service';
+import { ConfirmationService } from './SignupConfirmation.service';
 
 describe('ConfirmationService', () => {
   describe('sendSignupConfirmationEmail', () => {

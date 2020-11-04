@@ -1,4 +1,4 @@
-import { EmailService } from './EmailService';
+import { EmailService } from './Email.service';
 import { testService } from '../../../tests/utils';
 
 describe('EmailService', () => {

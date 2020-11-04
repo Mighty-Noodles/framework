@@ -1,7 +1,7 @@
 import { User } from '../../models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '../../../tests/utils';
 import { SignupService } from './Signup.service';
-import { ConfirmationService } from './Confirmation.service';
+import { ConfirmationService } from './SignupConfirmation.service';
 
 describe('SignupService', () => {
   describe('signup', () => {

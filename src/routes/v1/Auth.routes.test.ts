@@ -5,7 +5,7 @@ import { User } from '../../models/User';
 import { server } from '../../server';
 import { PASSWORD_HASH } from '../../../tests/constants';
 import { countModel, resetDatabase, testService } from '../../../tests/utils';
-import { ConfirmationService } from '../../services/auth/Confirmation.service';
+import { ConfirmationService } from '../../services/auth/SignupConfirmation.service';
 
 describe('/auth route', () => {
   describe('POST /signup', () => {
