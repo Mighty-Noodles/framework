@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
 import { ConfirmationService } from '../../services/auth/SignupConfirmation.service';
+import { PasswordService } from './Password.service';
 
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',
@@ -42,9 +43,7 @@ export const SignupService = {
       return Promise.reject({ code: 422, message: 'Password confirmation does not match' });
     }
 
-    if (password.length < 8) {
-      return Promise.reject({ code: 422, message: 'Password must be at least 8 characters long' });
-    }
+    await PasswordService.validatePasswordStrength(password);
 
     const existingUser = await User.query().findOne({ email });
     if (existingUser && existingUser.confirmed) {

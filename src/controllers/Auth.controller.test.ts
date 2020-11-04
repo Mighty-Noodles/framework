@@ -2,6 +2,7 @@ import { AuthController } from '../controllers/Auth.controller';
 import { User } from '../models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '../../tests/utils';
 import { ConfirmationService } from '../services/auth/SignupConfirmation.service';
+import { PasswordService } from '../services/auth/Password.service';
 
 describe('AuthController', () => {
   beforeEach(async () => {
@@ -176,6 +177,59 @@ describe('AuthController', () => {
       expect(status).toHaveBeenCalledWith(500);
       expect(json).toHaveBeenCalledWith({
         message: 'Error request reset password',
+      });
+    });
+  });
+
+
+  describe('reset_password', () => {
+    let user: User, token: string;
+    const password = 'STRINGPASS@';
+
+    beforeEach(async () => {
+      await resetDatabase();
+      user = await User.query().insertAndFetch({ email: 'a@a.com', first_name: 'a', last_name: 'b', hash: '123' });
+      token = PasswordService.resetPasswordTokenGenerator(user);
+    });
+
+    test('updates user passsword', async() => {
+      const status = jest.fn();
+      const json = jest.fn();
+      status.mockReturnValueOnce({ json });
+
+      const req: any = {
+        params: { id: user.id },
+        query: { token },
+        body: { password, password_confirmation: password },
+      };
+      const res: any = { status };
+
+      await AuthController.reset_password(req, res);
+
+      expect(status).toHaveBeenCalledWith(200);
+      expect(json).toHaveBeenCalledWith({
+        item: user.toJson(),
+      });
+    });
+
+    test('on error returns message', async () => {
+      const status = jest.fn();
+      const json = jest.fn();
+      status.mockReturnValueOnce({ json });
+
+      const req: any = {
+        params: { id: user.id },
+        query: { token: 'invalid' },
+        body: { password, password_confirmation: password },
+      };
+      const res: any = { status };
+
+      await AuthController.reset_password(req, res);
+
+      expect(status).toHaveBeenCalledWith(401);
+      expect(json).toHaveBeenCalledWith({
+        code: 401,
+        message: 'Token is invalid',
       });
     });
   });

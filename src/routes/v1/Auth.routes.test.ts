@@ -1,11 +1,13 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
 import { server } from '../../server';
 import { PASSWORD_HASH } from '../../../tests/constants';
 import { countModel, resetDatabase, testService } from '../../../tests/utils';
 import { ConfirmationService } from '../../services/auth/SignupConfirmation.service';
+import { PasswordService } from '../../services/auth/Password.service';
 
 describe('/auth route', () => {
   describe('POST /signup', () => {
@@ -116,10 +118,6 @@ describe('/auth route', () => {
     });
   });
 
-  describe('PUT /password/reset', () => {
-    test.todo('resets user password');
-  });
-
   describe('POST /password/forgot', () => {
     beforeAll(async () => {
       await resetDatabase();
@@ -175,6 +173,41 @@ describe('/auth route', () => {
 
           const confirmedUser = await User.query().findById(user.id);
           expect(confirmedUser.confirmed).toBeTruthy();
+
+          done(err);
+        });
+    });
+  });
+
+  describe('PUT /password/:id/reset', () => {
+    let user: User, token: string;
+
+    beforeAll(async () => {
+      await resetDatabase();
+      user = await User.query().insertAndFetch(
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH, confirmed: false }
+      );
+      token = PasswordService.resetPasswordTokenGenerator(user);
+    });
+
+    test('responds with a message', async (done) => {
+      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      expect.hasAssertions();
+
+      request(server)
+        .put(`/api/v1/password/${user.id}/reset?token=${token}`)
+        .send({ password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
+        .expect(200)
+        .end(async (err, res) => {
+          expect(res.body).toEqual({ item: user.toJson() });
+
+          const updatedUser = await User.query().findById(user.id);
+
+          expect(await bcrypt.compare('STRONGPASS@', updatedUser.hash)).toEqual(true);
 
           done(err);
         });

@@ -37,7 +37,7 @@ export class ConfirmationService {
       jwt.verify(token, this.tokenSecret(user), (err) => {
         if (err) {
           reject({
-            code: 400,
+            code: 401,
             message: 'Token is invalid',
           });
         }

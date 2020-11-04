@@ -155,7 +155,7 @@ describe('SignupService', () => {
           expectCountChangedBy(User, () => SignupService.signup(params), 0)
         ).rejects.toEqual({
           code: 422,
-          message: 'Password must be at least 8 characters long',
+          message: 'Password must contain at least 8 characters',
         });
       });
     });
@@ -214,7 +214,7 @@ describe('SignupService', () => {
 
       test('returns 400 error', async () => {
         await expect(SignupService.confirmSignup({ token: invalidToken, id: String(user.id) })).rejects.toEqual({
-          code: 400,
+          code: 401,
           message: 'Token is invalid',
         });
       });
@@ -228,7 +228,7 @@ describe('SignupService', () => {
         });
 
         await expect(SignupService.confirmSignup({ token: invalidToken, id: String(user.id) })).rejects.toEqual({
-          code: 400,
+          code: 401,
           message: 'Token is invalid',
         });
 

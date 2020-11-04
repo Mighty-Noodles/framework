@@ -1,5 +1,7 @@
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+
 import { User } from '../../models/User';
 import { buildRawEmail } from '../email/buildRawEmail';
 import { EmailService } from '../email/Email.service';
@@ -10,11 +12,18 @@ const {
   RESET_PASSWORD_EMAIL_SENDER,
  } = process.env;
 
+interface PasswordResetParams {
+  user: User;
+  token: string;
+  password: string;
+  password_confirmation: string;
+}
+
 export class PasswordService {
   static resetPasswordTokenGenerator(user: User): string {
     const { RESET_PASSWORD_EXPIRATION } = process.env;
 
-    const secret = `${process.env.JWT_SECRET}-${user.hash}-${user.id}-${user.created_at.toISOString()}`;
+    const secret = this.tokenSecret(user);
 
     const options = RESET_PASSWORD_EXPIRATION ? {
       expiresIn: RESET_PASSWORD_EXPIRATION,
@@ -27,6 +36,50 @@ export class PasswordService {
       secret,
       options,
     );
+  }
+
+  private static tokenSecret(user: User): string {
+    return `${process.env.JWT_SECRET}-${user.hash}-${user.id}-${user.created_at.toISOString()}-reset-password`;
+  }
+
+  static validatePasswordStrength(password: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (password.length < 8) {
+        return reject({
+          code: 422,
+          message: 'Password must contain at least 8 characters',
+        });
+      }
+
+      resolve();
+    });
+  }
+
+  static async reset({ user, token, password, password_confirmation }: PasswordResetParams): Promise<User> {
+    await this.validatePasswordStrength(password);
+
+    if (password !== password_confirmation) {
+      return Promise.reject({
+        code: 422,
+        message: 'Password confirmation do not match',
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, this.tokenSecret(user), async (err) => {
+        if (err) {
+          reject({
+            code: 401,
+            message: 'Token is invalid',
+          });
+        }
+
+        const hash = await bcrypt.hash(password, 10);
+        const updatedUser = await User.query().updateAndFetchById(user.id, { hash });
+        resolve(updatedUser);
+      });
+    });
+
   }
 
   static async requestReset({ email }: { email: string }): Promise<any> {
@@ -50,7 +103,6 @@ export class PasswordService {
     });
 
     return EmailService.sendRawEmail(message)
-      .then((res) => Promise.resolve(res))
       .catch(error => {
         if (process.env.NODE_ENV !== 'test') {
           console.error('Error sending email', error);

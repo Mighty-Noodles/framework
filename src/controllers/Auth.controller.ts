@@ -92,6 +92,27 @@ export const AuthController = {
 
         res.status(500).json({ message: 'Error request reset password' });
       });
+  },
+
+  reset_password: async (req: Request, res: Response): Promise<void> => {
+    const user = await User.query().findById(req.params.id);
+
+    return PasswordService.reset({
+        user,
+        token: req.query.token as string,
+        password: req.body.password,
+        password_confirmation: req.body.password_confirmation,
+      })
+      .then((user) => {
+        res.status(200).json({ item: user.toJson() });
+      })
+      .catch((err) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error request reset password', err);
+        }
+
+        res.status(err.code || 500).json({ code: err.code, message: err.message || 'Error request reset password' });
+      });
   }
 };
 
