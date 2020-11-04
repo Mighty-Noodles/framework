@@ -21,7 +21,7 @@ describe('ProfileController', () => {
       const req: any = { user };
       const res: any = { status };
 
-      await ProfileController.index(req, res);
+      ProfileController.index(req, res);
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({ item: user.toJson() });
@@ -38,7 +38,7 @@ describe('ProfileController', () => {
       const req: any = { user };
       const res: any = { status };
 
-      await ProfileController.index(req, res);
+      ProfileController.index(req, res);
 
       expect(json.mock.calls[0][0].item.email).toBeDefined();
       expect(json.mock.calls[0][0].item.hash).not.toBeDefined();
