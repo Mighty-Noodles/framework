@@ -1,16 +1,8 @@
-import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
-import { buildRawEmail } from '../email/buildRawEmail';
-import { EmailService } from '../email/Email.service';
-
-const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/password-reset.html', 'utf-8');
-
-const {
-  RESET_PASSWORD_EMAIL_SENDER,
- } = process.env;
+import { sendPasswordResetEmail } from '../email/auth/PasswordReset.email';
 
 interface PasswordResetParams {
   user: User;
@@ -69,7 +61,7 @@ export class PasswordService {
     return Promise.resolve(updatedUser);
   }
 
-  static async requestReset({ email }: { email: string }): Promise<any> {
+  static async sendPasswordResetEmail({ email }: { email: string }): Promise<any> {
     const user = await User.query().findOne({ email });
 
     if (!user) {
@@ -78,24 +70,7 @@ export class PasswordService {
 
     const token = this.resetPasswordTokenGenerator(user);
 
-    const resetLink = `https://${process.env.DOMAIN}/password_reset?token=${token}`;
-
-    const html = EMAIL_TEMPLATE.replace(/RESET_URL/g, resetLink);
-
-    const message = await buildRawEmail({
-      subject: 'You forgot your password',
-      to: email,
-      from: RESET_PASSWORD_EMAIL_SENDER,
-      html,
-    });
-
-    return EmailService.sendRawEmail(message)
-      .catch(error => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending email', error);
-        }
-        return Promise.reject({ message: 'Error sending email', error });
-      });
+    return sendPasswordResetEmail({ user, token });
   }
 
   static async verify(token: string, id: string): Promise<User> {

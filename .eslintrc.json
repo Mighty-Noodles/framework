@@ -22,7 +22,10 @@
     },
     "overrides": [
       {
-        "files": ["*.test.ts"],
+        "files": [
+          "*.test.ts",
+          "*/testUtils/utils.ts"
+        ],
         "rules": {
           "@typescript-eslint/no-explicit-any": 0,
           "@typescript-eslint/ban-ts-comment": 0

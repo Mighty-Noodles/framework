@@ -1,16 +1,9 @@
-import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models/User';
-import { buildRawEmail } from '../email/buildRawEmail';
+import { sendSignupConfirmationRequiredEmail } from '../email/auth/SignupConfirmationRequired.email';
+import { sendEarlyAccessSignupConfirmationRequiredEmail } from '../email/auth/EarlyAccessSignupConfirmationRequired.email';
+import { sendSignupCompletedEmail } from '../email/auth/SignupCompleted.email';
 import { EmailService } from '../email/Email.service';
-
-const SIGNUP_CONFIRMATION_TEMPLATE = fs.readFileSync('./templates/emails/signup-confirmation.html', 'utf-8');
-const SUBSCRIPTION_COMPLETED_TEMPLATE = fs.readFileSync('./templates/emails/subscription-completed.html', 'utf-8');
-const EARLY_ACCESS_SIGNUP_CONFIRMATION_TEMPLATE = fs.readFileSync('./templates/emails/early-access-signup-confirmation.html', 'utf-8');
-
-const {
-  SIGNUP_CONFIRMATION_EMAIL_SENDER,
- } = process.env;
 
 export class SignupConfirmationService {
   static tokenGenerator(user: User): string {
@@ -59,24 +52,7 @@ export class SignupConfirmationService {
 
     const token = this.tokenGenerator(user);
 
-    const confirmUrl = `https://${process.env.DOMAIN}/api/v1/signup/${user.id}/confirm?token=${token}`;
-
-    const html = SIGNUP_CONFIRMATION_TEMPLATE.replace(/CONFIRM_URL/g, confirmUrl);
-
-    const message = await buildRawEmail({
-      subject: 'Please confirm your subscription',
-      to: user.email,
-      from: SIGNUP_CONFIRMATION_EMAIL_SENDER,
-      html,
-    });
-
-    return EmailService.sendRawEmail(message)
-      .catch(error => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending confirmation email', error);
-        }
-        return Promise.reject({ code: error.code || 500 , message: error.message || 'Error sending confirmation email', error });
-      });
+    return sendSignupConfirmationRequiredEmail({ user, token });
   }
 
   static async sendSubscriptionCompletedEmail(user: User): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
@@ -84,26 +60,7 @@ export class SignupConfirmationService {
       return Promise.reject({ code: 400, message: 'User did not confirm subscription' });
     }
 
-    const token = this.tokenGenerator(user);
-
-    const confirmUrl = `https://${process.env.DOMAIN}/api/v1/signup/${user.id}/confirm?token=${token}`;
-
-    const html = SUBSCRIPTION_COMPLETED_TEMPLATE.replace(/CONFIRM_URL/g, confirmUrl);
-
-    const message = await buildRawEmail({
-      subject: 'Welcome',
-      to: user.email,
-      from: SIGNUP_CONFIRMATION_EMAIL_SENDER,
-      html,
-    });
-
-    return EmailService.sendRawEmail(message)
-      .catch(error => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending subscription completed email', error);
-        }
-        return Promise.reject({ code: error?.code || 500 , message: error.message || 'Error sending subscription completed email', error });
-      });
+    return sendSignupCompletedEmail({ user });
   }
 
   static async sendEarlyAccessSignupConfirmationEmail(user: User): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
@@ -113,23 +70,6 @@ export class SignupConfirmationService {
 
     const token = this.tokenGenerator(user);
 
-    const confirmUrl = `https://${process.env.DOMAIN}/api/v1/early_access/${user.id}/confirm?token=${token}`;
-
-    const html = EARLY_ACCESS_SIGNUP_CONFIRMATION_TEMPLATE.replace(/CONFIRM_URL/g, confirmUrl);
-
-    const message = await buildRawEmail({
-      subject: 'Please confirm your subscription',
-      to: user.email,
-      from: SIGNUP_CONFIRMATION_EMAIL_SENDER,
-      html,
-    });
-
-    return EmailService.sendRawEmail(message)
-      .catch(error => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending confirmation email', error);
-        }
-        return Promise.reject({ code: error.code || 500 , message: error.message || 'Error sending confirmation email', error });
-      });
+    return sendEarlyAccessSignupConfirmationRequiredEmail({ user, token });
   }
 }

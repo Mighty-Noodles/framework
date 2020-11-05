@@ -55,7 +55,7 @@ describe('PasswordService', () => {
     });
   });
 
-  describe('requestReset', () => {
+  describe('sendPasswordResetEmail', () => {
     let user;
 
     beforeAll(async () => {
@@ -78,14 +78,16 @@ describe('PasswordService', () => {
           Email: { sendRawEmail },
         });
 
-        await PasswordService.requestReset({ email: 'user@email.com' });
+        await PasswordService.sendPasswordResetEmail({ email: 'user@email.com' });
 
-        const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
+        const joinedEmail = sendRawEmail.mock.calls[0].join('')
+          .replace(/=[\r\n]/g, '')
+          .replace(/[\r\n]/g, '');
 
         const token = PasswordService.resetPasswordTokenGenerator(user);
 
         expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/password_reset?token`);
-        expect(joinedEmail.replace(/=/g, '')).toMatch(token);
+        expect(joinedEmail).toMatch(token);
         expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: You forgot your password'));
         expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
         expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
@@ -94,7 +96,7 @@ describe('PasswordService', () => {
 
     describe('when user does not exist', () => {
       test('resolves empty', async () => {
-        await expect(PasswordService.requestReset({ email: 'WRONG' })).resolves.toBeUndefined();
+        await expect(PasswordService.sendPasswordResetEmail({ email: 'WRONG' })).resolves.toBeUndefined();
       });
     });
 
@@ -105,7 +107,7 @@ describe('PasswordService', () => {
           Email: { sendRawEmail },
         });
 
-        await expect(PasswordService.requestReset({ email: 'user@email.com' })).rejects.toEqual({ message: 'Error sending email', error: 'Error' });
+        await expect(PasswordService.sendPasswordResetEmail({ email: 'user@email.com' })).rejects.toEqual({ code: 500, message: 'Error sending email', error: 'Error' });
       });
     });
   });

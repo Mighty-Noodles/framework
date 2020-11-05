@@ -24,8 +24,8 @@ describe('SignupConfirmationService', () => {
         await SignupConfirmationService.sendSignupConfirmationEmail(user);
 
         const joinedEmail = sendRawEmail.mock.calls[0].join('')
-          .replace(/[\r\n]/g, '')
-          .replace(/=/g, '');
+          .replace(/=[\r\n]/g, '')
+          .replace(/[\r\n]/g, '');
 
         const token = SignupConfirmationService.tokenGenerator(user);
 
@@ -128,8 +128,8 @@ describe('SignupConfirmationService', () => {
         await SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user);
 
         const joinedEmail = sendRawEmail.mock.calls[0].join('')
-          .replace(/[\r\n]/g, '')
-          .replace(/=/g, '');
+          .replace(/=[\r\n]/g, '')
+          .replace(/[\r\n]/g, '');
 
         const token = SignupConfirmationService.tokenGenerator(user);
 

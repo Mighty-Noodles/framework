@@ -81,7 +81,7 @@ export const AuthController = {
   request_reset_password: async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
 
-    return PasswordService.requestReset({ email })
+    return PasswordService.sendPasswordResetEmail({ email })
       .then(() => {
         res.status(200).json({ message: 'An email with a password reset link was sent to your inbox' });
       })

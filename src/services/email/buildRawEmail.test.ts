@@ -54,6 +54,7 @@ describe('buildRawEmail', () => {
 
 function escapeRegex(string) {
   return string
-    .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+    // .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+    .replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
     .replace('RANDOM_TEXT', '.+');
 }

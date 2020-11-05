@@ -3,7 +3,7 @@ import { User } from '../models/User';
 
 let TestService: any = {};
 
-export const testService = (service: any): typeof TestService => {
+export const testService = (service: Record<string, unknown>): typeof TestService => {
   TestService = service;
   return TestService;
 }
