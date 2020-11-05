@@ -1,5 +1,5 @@
 import pg from 'pg';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv-safe';
 
 dotenv.config();
 pg.defaults.ssl = process.env.DATABASE_USE_SSL !== 'false';

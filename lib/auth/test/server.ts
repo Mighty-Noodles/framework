@@ -1,11 +1,11 @@
 import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
+import dotenv from 'dotenv-safe';
 
 import { authRoutes } from '@auth/routes/Auth.routes';
 import { profileRoutes } from '@auth/routes/Profile.routes';
 
-const dotenv = require('dotenv'); // eslint-disable-line
 dotenv.config();
 
 const app = express();

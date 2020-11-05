@@ -2,7 +2,7 @@ import Knex from 'knex';
 import _ from 'lodash';
 import { migrate } from './migration/migrate';
 
-import dotenv from 'dotenv';
+import dotenv from 'dotenv-safe';
 
 dotenv.config();
 

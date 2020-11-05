@@ -1,5 +1,5 @@
 import pgMigrate from 'node-pg-migrate';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv-safe';
 
 import { conn } from '@db/connection.config';
 

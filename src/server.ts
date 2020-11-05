@@ -2,10 +2,9 @@ import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import dotenv from 'dotenv-safe';
 
 import { apiRoutes } from './routes/api';
-
-const dotenv = require('dotenv'); // eslint-disable-line
 dotenv.config();
 
 const app = express();
