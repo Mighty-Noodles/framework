@@ -1,6 +1,7 @@
 import { User } from '@auth/models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '@test/utils';
 import { EarlyAccessSignupService } from '@auth/services/EarlyAccessSignup.service';
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
 describe('EarlyAccessSignupService', () => {
   describe('signup', () => {
@@ -35,9 +36,9 @@ describe('EarlyAccessSignupService', () => {
           Email: { sendRawEmail },
         });
 
-        await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 1);
+        const user = await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 1);
 
-        expect(sendRawEmail).toHaveBeenCalled();
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.action_url.replace(/{USER_ID}/g, user.id)));
       });
 
       test('returns error when email delivery fails', async () => {
@@ -111,8 +112,7 @@ describe('EarlyAccessSignupService', () => {
 
             await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 0);
 
-            expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('early'));
-            expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('access'));
+            expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject}`));
           });
 
           test('returns error when email delivery fails', async () => {
@@ -172,8 +172,7 @@ describe('EarlyAccessSignupService', () => {
 
         await EarlyAccessSignupService.confirmSignup({ user, password, password_confirmation: password });
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Welcome'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`To: ${user.email}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
       });
     });
 

@@ -3,8 +3,11 @@ import fs from 'fs';
 import { User } from '@auth/models/User';
 import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
+import { validateEmailConfig, EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
 const SUBSCRIPTION_COMPLETED_TEMPLATE = fs.readFileSync('./templates/emails/subscription-completed.html', 'utf-8');
+
+validateEmailConfig('signupCompleted');
 
 const {
   SIGNUP_EMAIL_SENDER,
@@ -15,8 +18,10 @@ interface TokenizedEmailParams {
 }
 
 export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+  const { subject } = EMAIL_CONFIG['signupCompleted'];
+
   const message = {
-    subject: 'Welcome',
+    subject,
     to: user.email,
     from: SIGNUP_EMAIL_SENDER,
     html: replaceUserParams(SUBSCRIPTION_COMPLETED_TEMPLATE, user),

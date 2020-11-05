@@ -1,0 +1,17 @@
+{
+  "earlyAccessSignupConfirmationRequired": {
+    "subject": "Please confirm your early access subscription!",
+    "action_url": "http://localhost:3000/api/v1/signup/early_access/{USER_ID}/confirm"
+  },
+  "passwordReset": {
+    "subject": "Forgot your password?",
+    "action_url": "http://localhost:3000/api/v1/password/{USER_ID}/reset"
+  },
+  "signupConfirmationRequired": {
+    "subject": "One more step",
+    "action_url": "http://localhost:3000/api/v1/signup/{USER_ID}/confirm"
+  },
+  "signupCompleted": {
+    "subject": "Thanks for signing up!"
+  }
+}

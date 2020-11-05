@@ -1,8 +1,9 @@
 import { User } from '@auth/models/User';
 import { resetDatabase, testService } from '@test/utils';
 import { sendEarlyAccessSignupConfirmationRequiredEmail } from '@auth/email/EarlyAccessSignupConfirmationRequired.email';
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
-describe('PasswordReset Email', () => {
+describe('EarlyAccessSignupConfirmationRequired Email', () => {
   let user: User;
   const token = 'MY_TOKEN';
 
@@ -22,13 +23,9 @@ describe('PasswordReset Email', () => {
 
       await sendEarlyAccessSignupConfirmationRequiredEmail({ user, token });
 
-      const joinedEmail = sendRawEmail.mock.calls[0].join('')
-        .replace(/=[\r\n]/g, '')
-        .replace(/[\r\n]/g, '');
-
-      expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/api/v1/early_access/${user.id}/confirm?token=`);
-      expect(joinedEmail).toMatch('MY_TOKEN');
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: Please confirm your subscription'));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('MY_TOKEN'));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.action_url.replace(/{USER_ID}/g, user.id)));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject}`));
       expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
       expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
     });

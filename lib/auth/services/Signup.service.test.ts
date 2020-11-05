@@ -1,6 +1,7 @@
 import { User } from '@auth/models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '@test/utils';
 import { SignupService } from '@auth/services/Signup.service';
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
 describe('SignupService', () => {
   describe('signup', () => {
@@ -197,8 +198,7 @@ describe('SignupService', () => {
 
       await SignupService.confirmSignup(user);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Welcome'));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`To: ${user.email}`));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
     });
 
     describe('when user is already confirmed', () => {

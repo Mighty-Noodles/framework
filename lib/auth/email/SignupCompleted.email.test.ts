@@ -1,8 +1,9 @@
 import { User } from '@auth/models/User';
 import { resetDatabase, testService } from '@test/utils';
 import { sendSignupCompletedEmail } from '@auth/email/SignupCompleted.email';
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
-describe('PasswordReset Email', () => {
+describe('SignupCompleted Email', () => {
   let user: User;
 
   beforeAll(async () => {
@@ -20,7 +21,7 @@ describe('PasswordReset Email', () => {
       });
 
       await sendSignupCompletedEmail({ user });
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: Welcome'));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
       expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
       expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.SIGNUP_EMAIL_SENDER}`));
     });

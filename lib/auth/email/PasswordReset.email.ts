@@ -3,12 +3,17 @@ import fs from 'fs';
 import { User } from '@auth/models/User';
 import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
+import { validateEmailConfig, EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
 const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/password-reset.html', 'utf-8');
 
 const {
   RESET_PASSWORD_EMAIL_SENDER,
- } = process.env;
+} = process.env;
+
+validateEmailConfig('passwordReset', {
+  action_url: 'http.*{USER_ID}',
+});
 
 interface TokenizedEmailParams {
   user: User;
@@ -16,12 +21,14 @@ interface TokenizedEmailParams {
 }
 
 export async function sendPasswordResetEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
-  const resetLink = `https://${process.env.DOMAIN}/password_reset?token=${token}`;
+  const { subject, action_url } = EMAIL_CONFIG['passwordReset'];
 
-  const html = EMAIL_TEMPLATE.replace(/{RESET_URL}/g, resetLink);
+  const actionUrl = `${action_url}?token=${token}`;
+  const html = EMAIL_TEMPLATE
+    .replace(/{ACTION_URL}/g, actionUrl);
 
   const message = {
-    subject: 'You forgot your password',
+    subject,
     to: user.email,
     from: RESET_PASSWORD_EMAIL_SENDER,
     html: replaceUserParams(html, user),

@@ -2,6 +2,7 @@ import { User } from '@auth/models/User';
 import { resetDatabase, testService } from '@test/utils';
 
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
 describe('SignupConfirmationService', () => {
   describe('sendSignupConfirmationEmail', () => {
@@ -23,17 +24,7 @@ describe('SignupConfirmationService', () => {
 
         await SignupConfirmationService.sendSignupConfirmationEmail(user);
 
-        const joinedEmail = sendRawEmail.mock.calls[0].join('')
-          .replace(/=[\r\n]/g, '')
-          .replace(/[\r\n]/g, '');
-
-        const token = SignupConfirmationService.tokenGenerator(user);
-
-        expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/api/v1/signup/${user.id}/confirm`);
-        expect(joinedEmail).toMatch(token);
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: Please confirm your subscription'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupConfirmationRequired.subject}`));
       });
     });
 
@@ -79,9 +70,7 @@ describe('SignupConfirmationService', () => {
 
         await SignupConfirmationService.sendSubscriptionCompletedEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: Welcome'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
       });
     });
 
@@ -127,17 +116,7 @@ describe('SignupConfirmationService', () => {
 
         await SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user);
 
-        const joinedEmail = sendRawEmail.mock.calls[0].join('')
-          .replace(/=[\r\n]/g, '')
-          .replace(/[\r\n]/g, '');
-
-        const token = SignupConfirmationService.tokenGenerator(user);
-
-        expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/api/v1/early_access/${user.id}/confirm`);
-        expect(joinedEmail).toMatch(token);
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: Please confirm your subscription'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.action_url.replace(/{USER_ID}/g, String(user.id))));
       });
     });
 

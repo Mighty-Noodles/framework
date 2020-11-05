@@ -4,6 +4,7 @@ import { User } from '@auth/models/User';
 import { resetDatabase, testService } from '@test/utils';
 
 import { PasswordService } from './Password.service';
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
 describe('PasswordService', () => {
   describe('reset', () => {
@@ -56,11 +57,9 @@ describe('PasswordService', () => {
   });
 
   describe('sendPasswordResetEmail', () => {
-    let user;
-
     beforeAll(async () => {
       await resetDatabase();
-      user = await User.query().insertAndFetch(
+      await User.query().insertAndFetch(
         { email: 'user@email.com', first_name: 'a', last_name: 'b', hash: 'hashedpass' },
       )
     });
@@ -80,17 +79,7 @@ describe('PasswordService', () => {
 
         await PasswordService.sendPasswordResetEmail({ email: 'user@email.com' });
 
-        const joinedEmail = sendRawEmail.mock.calls[0].join('')
-          .replace(/=[\r\n]/g, '')
-          .replace(/[\r\n]/g, '');
-
-        const token = PasswordService.resetPasswordTokenGenerator(user);
-
-        expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/password_reset?token`);
-        expect(joinedEmail).toMatch(token);
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: You forgot your password'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.passwordReset.subject}`));
       });
     });
 

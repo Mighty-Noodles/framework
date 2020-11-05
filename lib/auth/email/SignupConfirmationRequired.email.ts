@@ -3,8 +3,13 @@ import fs from 'fs';
 import { User } from '@auth/models/User';
 import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
+import { EMAIL_CONFIG, validateEmailConfig } from '@email/services/validateEmailConfig';
 
-const SIGNUP_CONFIRMATION_TEMPLATE = fs.readFileSync('./templates/emails/signup-confirmation.html', 'utf-8');
+const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signup-confirmation.html', 'utf-8');
+
+validateEmailConfig('signupConfirmationRequired', {
+  action_url: '{USER_ID}',
+});
 
 const {
   SIGNUP_EMAIL_SENDER,
@@ -16,13 +21,14 @@ interface TokenizedEmailParams {
 }
 
 export async function sendSignupConfirmationRequiredEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
-  const confirmUrl = `https://${process.env.DOMAIN}/api/v1/signup/${user.id}/confirm?token=${token}`;
+  const { subject, action_url } = EMAIL_CONFIG['signupConfirmationRequired'];
 
-  const html = SIGNUP_CONFIRMATION_TEMPLATE
-    .replace(/{CONFIRM_URL}/g, confirmUrl);
+  const actionUrl = `${action_url}?token=${token}`;
+  const html = EMAIL_TEMPLATE
+    .replace(/{ACTION_URL}/g, actionUrl);
 
   const message = {
-    subject: 'Please confirm your subscription',
+    subject,
     to: user.email,
     from: SIGNUP_EMAIL_SENDER,
     html: replaceUserParams(html, user),

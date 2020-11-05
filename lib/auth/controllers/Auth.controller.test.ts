@@ -4,6 +4,8 @@ import { expectCountChangedBy, resetDatabase, testService } from '@test/utils';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { PasswordService } from '@auth/services/Password.service';
 
+import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+
 describe('AuthController', () => {
   beforeEach(async () => {
     await resetDatabase();
@@ -71,7 +73,7 @@ describe('AuthController', () => {
       token = SignupConfirmationService.tokenGenerator(user);
     });
 
-    test('sends email with password reset request link', async() => {
+    test('sends email with confirmation link', async() => {
       const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
         Email: { sendRawEmail },
@@ -90,7 +92,7 @@ describe('AuthController', () => {
       await AuthController.confirmSignup(req, res);
 
       const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
-      expect(joinedEmail).toMatch(`Welcome`);
+      expect(joinedEmail).toMatch(EMAIL_CONFIG.signupCompleted.subject);
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({
@@ -140,8 +142,7 @@ describe('AuthController', () => {
 
       await AuthController.request_reset_password(req, res);
 
-      const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
-      expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/password_reset`);
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.passwordReset.subject}`));
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({
@@ -294,8 +295,8 @@ describe('AuthController', () => {
 
       await expectCountChangedBy(User, () => AuthController.earlyAccessSignup(req, res), 1);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('early'));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('access'));
+
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject}`));
     });
   });
 
@@ -309,7 +310,7 @@ describe('AuthController', () => {
       token = SignupConfirmationService.tokenGenerator(user);
     });
 
-    test('sends email with password reset request link', async() => {
+    test('sends email with confirmation link', async() => {
       const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
         Email: { sendRawEmail },
@@ -329,7 +330,7 @@ describe('AuthController', () => {
       await AuthController.earlyAccessConfirmSignup(req, res);
 
       const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
-      expect(joinedEmail).toMatch(`Welcome`);
+      expect(joinedEmail).toMatch(EMAIL_CONFIG.signupCompleted.subject);
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({

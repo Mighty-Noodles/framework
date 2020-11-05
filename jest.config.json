@@ -1,6 +1,7 @@
 {
   "moduleNameMapper": {
     "^src/(.*)$": ["<rootDir>/src/$1"],
+    "^templates/(.*)$": ["<rootDir>/templates/$1"],
 
     "^@auth/(.*)$": ["<rootDir>/lib/auth/$1"],
     "^@db/(.*)$": ["<rootDir>/lib/db/$1"],
