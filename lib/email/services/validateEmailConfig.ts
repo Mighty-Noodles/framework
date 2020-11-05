@@ -1,19 +1,26 @@
 import _ from 'lodash';
 
-const FILE = './templates/emails/email.config.json';
 import EMAIL_CONFIG from 'templates/emails/email.config.json';
 
 export { EMAIL_CONFIG };
 
-export function validateEmailConfig(key: string, body: string, mandatoryProps: Record<string, string> = {}): void {
-  const config = EMAIL_CONFIG[key];
+interface EmailConfig {
+  [key: string]: {
+    subject: string;
+  },
+}
+
+const ERROR_PREFIX = '[EMAIL CONFIG]';
+
+export function validateEmailConfig(key: string, body: string, mandatoryProps: Record<string, string> = {}, configuration: EmailConfig = EMAIL_CONFIG): void {
+  const config = configuration[key];
 
   if (!config) {
-    throw new Error(`'${key}' is missing in ${FILE}`);
+    throw new Error(`${ERROR_PREFIX} '${key}' is missing`);
   }
 
   if (!config.subject) {
-    throw new Error(`'subject' in '${key}' is missing in ${FILE}`);
+    throw new Error(`${ERROR_PREFIX} 'subject' in '${key}' is missing`);
   }
 
   _.forEach(mandatoryProps, (match, propKey) => {
@@ -22,17 +29,17 @@ export function validateEmailConfig(key: string, body: string, mandatoryProps: R
     }
 
     if (!config[propKey]) {
-      throw new Error(`'${propKey}' in '${key}' is missing and should match '${match}' in ${FILE} `);
+      throw new Error(`${ERROR_PREFIX} '${propKey}' in '${key}' is missing and should match '${match}'`);
     }
 
     if (!config[propKey].match(match)) {
-      throw new Error(`'${propKey}' in '${key}' should match '${match}'`);
+      throw new Error(`${ERROR_PREFIX} '${propKey}' in '${key}' should match '${match}'`);
     }
   });
 
   if (mandatoryProps.body) {
     if (!body.match(mandatoryProps.body)) {
-      throw new Error(`Email template in '${key}' should match '${mandatoryProps.body}'`);
+      throw new Error(`${ERROR_PREFIX} Email template in '${key}' should match '${mandatoryProps.body}'`);
     }
   }
 }
