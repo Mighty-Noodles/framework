@@ -1,7 +1,7 @@
 import { AuthController } from '../controllers/Auth.controller';
 import { User } from '../models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '../../tests/utils';
-import { ConfirmationService } from '../services/auth/SignupConfirmation.service';
+import { SignupConfirmationService } from '../services/auth/SignupConfirmation.service';
 import { PasswordService } from '../services/auth/Password.service';
 
 describe('AuthController', () => {
@@ -10,56 +10,54 @@ describe('AuthController', () => {
   });
 
   describe('signup', () => {
+    let res, req, status, json;
+
     beforeEach(() => {
       testService({
         Email: { sendRawEmail: () => Promise.resolve() },
       });
     });
 
-    describe('when new user', () => {
-      let res, req, status, json;
+    beforeEach(() => {
+      json = jest.fn();
+      status = jest.fn().mockReturnValueOnce({ json });
 
-      beforeEach(() => {
-        json = jest.fn();
-        status = jest.fn().mockReturnValueOnce({ json });
+      req = {
+        body: {
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+          password: 'StR0NGP@SS!',
+          password_confirmation: 'StR0NGP@SS!',
+        },
+      };
+      res = { status };
+    });
 
-        req = {
-          body: {
-            email: 'a@a.com',
-            first_name: 'a',
-            last_name: 'b',
-            password: 'StR0NGP@SS!',
-            password_confirmation: 'StR0NGP@SS!',
-          },
-        };
-        res = { status };
+    test('return new created user without hash', async () => {
+      await expectCountChangedBy(User, () => AuthController.signup(req, res), 1);
+
+      expect(status).toHaveBeenCalledWith(200);
+      expect(json).toHaveBeenCalledWith({
+        item: {
+          id: expect.any(Number),
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+        },
+      });
+      expect(json.mock.calls[0][0].item.hash).not.toBeDefined();
+    });
+
+    test('sends confirmation email', async () => {
+      const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+      testService({
+        Email: { sendRawEmail },
       });
 
-      test('return new created user without hash', async () => {
-        await expectCountChangedBy(User, () => AuthController.signup(req, res), 1);
+      await expectCountChangedBy(User, () => AuthController.signup(req, res), 1);
 
-        expect(status).toHaveBeenCalledWith(200);
-        expect(json).toHaveBeenCalledWith({
-          item: {
-            id: expect.any(Number),
-            email: 'a@a.com',
-            first_name: 'a',
-            last_name: 'b',
-          },
-        });
-        expect(json.mock.calls[0][0].item.hash).not.toBeDefined();
-      });
-
-      test('sends confirmation email', async () => {
-        const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
-        testService({
-          Email: { sendRawEmail },
-        });
-
-        await expectCountChangedBy(User, () => AuthController.signup(req, res), 1);
-
-        expect(sendRawEmail).toHaveBeenCalled();
-      });
+      expect(sendRawEmail).toHaveBeenCalled();
     });
   });
 
@@ -70,7 +68,7 @@ describe('AuthController', () => {
     beforeEach(async () => {
       await resetDatabase();
       user =await User.query().insertAndFetch({ email: 'a@a.com', first_name: 'a', last_name: 'b', hash: '123', confirmed: false });
-      token = ConfirmationService.tokenGenerator(user);
+      token = SignupConfirmationService.tokenGenerator(user);
     });
 
     test('sends email with password reset request link', async() => {
@@ -100,28 +98,23 @@ describe('AuthController', () => {
       });
     });
 
-    test('on error returns message', async () => {
-      const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'FAKE' }));
-      testService({
-        Email: { sendRawEmail },
-      });
-
+    test('authenticates token', async () => {
       const status = jest.fn();
       const json = jest.fn();
       status.mockReturnValueOnce({ json });
 
       const req: any = {
         params: { id: user.id },
-        query: { token },
+        query: { token: 'INVALID' },
       };
       const res: any = { status };
 
       await AuthController.confirmSignup(req, res);
 
-      expect(status).toHaveBeenCalledWith(100);
+      expect(status).toHaveBeenCalledWith(401);
       expect(json).toHaveBeenCalledWith({
-        code: 100,
-        message: 'Error sending subscription completed email',
+        code: 401,
+        message: 'Token is invalid',
       });
     });
   });
@@ -181,7 +174,6 @@ describe('AuthController', () => {
     });
   });
 
-
   describe('reset_password', () => {
     let user: User, token: string;
     const password = 'STRINGPASS@';
@@ -212,7 +204,7 @@ describe('AuthController', () => {
       });
     });
 
-    test('on error returns message', async () => {
+    test('authenticates token', async () => {
       const status = jest.fn();
       const json = jest.fn();
       status.mockReturnValueOnce({ json });

@@ -11,7 +11,7 @@ const {
   SIGNUP_CONFIRMATION_EMAIL_SENDER,
  } = process.env;
 
-export class ConfirmationService {
+export class SignupConfirmationService {
   static tokenGenerator(user: User): string {
     const secret = this.tokenSecret(user);
 
@@ -28,7 +28,7 @@ export class ConfirmationService {
 
     if (!user) {
       return Promise.reject({
-        code: 401,
+        code: 404,
         message: 'User not found',
       });
     }
@@ -74,7 +74,7 @@ export class ConfirmationService {
         if (process.env.NODE_ENV !== 'test') {
           console.error('Error sending confirmation email', error);
         }
-        return Promise.reject({ code: error.code || 500 , message: 'Error sending confirmation email', error });
+        return Promise.reject({ code: error.code || 500 , message: error.message || 'Error sending confirmation email', error });
       });
   }
 
@@ -101,7 +101,9 @@ export class ConfirmationService {
         if (process.env.NODE_ENV !== 'test') {
           console.error('Error sending subscription completed email', error);
         }
-        return Promise.reject({ code: error?.code || 500 , message: 'Error sending subscription completed email', error });
+        return Promise.reject({ code: error?.code || 500 , message: error.message || 'Error sending subscription completed email', error });
+      });
+  }
       });
   }
 }

@@ -6,7 +6,7 @@ import { User } from '../../models/User';
 import { server } from '../../server';
 import { PASSWORD_HASH } from '../../../tests/constants';
 import { countModel, resetDatabase, testService } from '../../../tests/utils';
-import { ConfirmationService } from '../../services/auth/SignupConfirmation.service';
+import { SignupConfirmationService } from '../../services/auth/SignupConfirmation.service';
 import { PasswordService } from '../../services/auth/Password.service';
 
 describe('/auth route', () => {
@@ -154,7 +154,7 @@ describe('/auth route', () => {
       user = await User.query().insertAndFetch(
         { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH, confirmed: false }
       );
-      token = ConfirmationService.tokenGenerator(user);
+      token = SignupConfirmationService.tokenGenerator(user);
     });
 
     test('responds with a message', async (done) => {
@@ -185,7 +185,7 @@ describe('/auth route', () => {
     beforeAll(async () => {
       await resetDatabase();
       user = await User.query().insertAndFetch(
-        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH, confirmed: false }
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH, confirmed: true }
       );
       token = PasswordService.resetPasswordTokenGenerator(user);
     });
@@ -206,7 +206,6 @@ describe('/auth route', () => {
           expect(res.body).toEqual({ item: user.toJson() });
 
           const updatedUser = await User.query().findById(user.id);
-
           expect(await bcrypt.compare('STRONGPASS@', updatedUser.hash)).toEqual(true);
 
           done(err);

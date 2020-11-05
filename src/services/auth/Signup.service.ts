@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
-import { ConfirmationService } from '../../services/auth/SignupConfirmation.service';
+import { SignupConfirmationService } from '../../services/auth/SignupConfirmation.service';
 import { PasswordService } from './Password.service';
 
 const MANDATORY_SIGNUP_FIELDS = [
@@ -17,12 +17,6 @@ interface SignupParams {
   email: string;
   password: string;
   password_confirmation: string
-}
-
-
-interface SignupConfirmationParams {
-  token: string;
-  id: string;
 }
 
 export const SignupService = {
@@ -55,7 +49,7 @@ export const SignupService = {
       (existingUser && await existingUser.$query().updateAndFetch({ first_name, last_name, hash })) ||
       await User.query().insertAndFetch({ email, first_name, last_name, hash });
 
-    return ConfirmationService.sendSignupConfirmationEmail(user)
+    return SignupConfirmationService.sendSignupConfirmationEmail(user)
       .then(() => user)
       .catch((err) => {
         if (process.env.NODE_ENV !== 'test') {
@@ -65,20 +59,18 @@ export const SignupService = {
       });
   },
 
-  confirmSignup: async (params: SignupConfirmationParams): Promise<User> => {
-    return ConfirmationService.verify(params.token, params.id)
-      .then(async user => {
-        if (user.confirmed) {
-          return user;
-        }
+  confirmSignup: async (user: User): Promise<User> => {
+    try {
+      if (user.confirmed) {
+        return Promise.resolve(user);
+      }
 
-        const updatedUser = await user.$query().updateAndFetch({ confirmed: true });
-        await ConfirmationService.sendSubscriptionCompletedEmail(updatedUser);
+      const updatedUser = await user.$query().updateAndFetch({ confirmed: true });
+      await SignupConfirmationService.sendSubscriptionCompletedEmail(updatedUser);
 
-        return updatedUser;
-      })
-      .catch(err => {
-        return Promise.reject({ code: err?.code || 500, message: err?.message || 'Error confirming subscription' });
-      });
+      return Promise.resolve(updatedUser);
+    } catch (err) {
+      return Promise.reject({ code: err?.code || 500, message: err?.message || 'Error confirming subscription' });
+    }
   },
 }

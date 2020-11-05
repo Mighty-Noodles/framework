@@ -14,7 +14,6 @@ const {
 
 interface PasswordResetParams {
   user: User;
-  token: string;
   password: string;
   password_confirmation: string;
 }
@@ -42,7 +41,7 @@ export class PasswordService {
     return `${process.env.JWT_SECRET}-${user.hash}-${user.id}-${user.created_at.toISOString()}-reset-password`;
   }
 
-  static validatePasswordStrength(password: string): Promise<void> {
+  static validatePasswordStrength(password = ''): Promise<void> {
     return new Promise((resolve, reject) => {
       if (password.length < 8) {
         return reject({
@@ -55,7 +54,7 @@ export class PasswordService {
     });
   }
 
-  static async reset({ user, token, password, password_confirmation }: PasswordResetParams): Promise<User> {
+  static async reset({ user, password, password_confirmation }: PasswordResetParams): Promise<User> {
     await this.validatePasswordStrength(password);
 
     if (password !== password_confirmation) {
@@ -65,21 +64,9 @@ export class PasswordService {
       });
     }
 
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, this.tokenSecret(user), async (err) => {
-        if (err) {
-          reject({
-            code: 401,
-            message: 'Token is invalid',
-          });
-        }
-
-        const hash = await bcrypt.hash(password, 10);
-        const updatedUser = await User.query().updateAndFetchById(user.id, { hash });
-        resolve(updatedUser);
-      });
-    });
-
+    const hash = await bcrypt.hash(password, 10);
+    const updatedUser = await User.query().updateAndFetchById(user.id, { hash });
+    return Promise.resolve(updatedUser);
   }
 
   static async requestReset({ email }: { email: string }): Promise<any> {
@@ -109,5 +96,29 @@ export class PasswordService {
         }
         return Promise.reject({ message: 'Error sending email', error });
       });
+  }
+
+  static async verify(token: string, id: string): Promise<User> {
+    const user = await User.query().findById(id);
+
+    if (!user) {
+      return Promise.reject({
+        code: 404,
+        message: 'User not found',
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, this.tokenSecret(user), (err) => {
+        if (err) {
+          reject({
+            code: 401,
+            message: 'Token is invalid',
+          });
+        }
+
+        resolve(user);
+      });
+    });
   }
 }

@@ -7,7 +7,7 @@ import { PasswordService } from './Password.service';
 
 describe('PasswordService', () => {
   describe('reset', () => {
-    let user: User, token: string;
+    let user: User;
     const password = 'STRONGPASS@';
 
     beforeAll(async () => {
@@ -15,13 +15,12 @@ describe('PasswordService', () => {
       user = await User.query().insertAndFetch(
         { email: 'user@email.com', first_name: 'a', last_name: 'b', hash: 'hashedpass' },
       );
-      token = PasswordService.resetPasswordTokenGenerator(user);
     });
 
 
     describe('success', () => {
       test('updates user password', async () => {
-        await PasswordService.reset({ user, token, password, password_confirmation: password });
+        await PasswordService.reset({ user, password, password_confirmation: password });
 
         const updatedUser = await User.query().findById(user.id);
 
@@ -31,7 +30,7 @@ describe('PasswordService', () => {
 
       test('returns user', async () => {
         delete process.env.RESET_PASSWORD_EXPIRATION;
-        const updatedUser = await PasswordService.reset({ user, token, password, password_confirmation: password });
+        const updatedUser = await PasswordService.reset({ user, password, password_confirmation: password });
 
         const valid = await bcrypt.compare(password, updatedUser.hash);
         expect(valid).toEqual(true);
@@ -41,28 +40,16 @@ describe('PasswordService', () => {
     describe('returns error', () => {
       test('when password is week', async () => {
         const password = '1234567';
-        await expect(PasswordService.reset({ user, token, password, password_confirmation: password })).rejects.toEqual({
+        await expect(PasswordService.reset({ user, password, password_confirmation: password })).rejects.toEqual({
           code: 422,
           message: 'Password must contain at least 8 characters',
         });
       });
 
       test('when password_confirmation is invalid', async () => {
-        await expect(PasswordService.reset({ user, token, password, password_confirmation: 'another' })).rejects.toEqual({
+        await expect(PasswordService.reset({ user, password, password_confirmation: 'another' })).rejects.toEqual({
           code: 422,
           message: 'Password confirmation do not match',
-        });
-      });
-
-      test('when token is invalid', async () => {
-        const user2 = await User.query().insertAndFetch(
-          { email: 'user2@email.com', first_name: 'a', last_name: 'b', hash: 'hashedpass' },
-        );
-        token = PasswordService.resetPasswordTokenGenerator(user2);
-
-        await expect(PasswordService.reset({ user, token, password, password_confirmation: password })).rejects.toEqual({
-          code: 401,
-          message: 'Token is invalid',
         });
       });
     });

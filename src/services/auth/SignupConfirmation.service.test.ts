@@ -1,9 +1,9 @@
 import { User } from '../../models/User';
 import { resetDatabase, testService } from '../../../tests/utils';
 
-import { ConfirmationService } from './SignupConfirmation.service';
+import { SignupConfirmationService } from './SignupConfirmation.service';
 
-describe('ConfirmationService', () => {
+describe('SignupConfirmationService', () => {
   describe('sendSignupConfirmationEmail', () => {
     let user: User;
 
@@ -21,13 +21,13 @@ describe('ConfirmationService', () => {
           Email: { sendRawEmail },
         });
 
-        await ConfirmationService.sendSignupConfirmationEmail(user);
+        await SignupConfirmationService.sendSignupConfirmationEmail(user);
 
         const joinedEmail = sendRawEmail.mock.calls[0].join('')
           .replace(/[\r\n]/g, '')
           .replace(/=/g, '');
 
-        const token = ConfirmationService.tokenGenerator(user);
+        const token = SignupConfirmationService.tokenGenerator(user);
 
         expect(joinedEmail).toMatch(`https://${process.env.DOMAIN}/api/v1/signup/${user.id}/confirm`);
         expect(joinedEmail).toMatch(token);
@@ -44,18 +44,18 @@ describe('ConfirmationService', () => {
 
       test('rejects request with USER CONFIRMED status', async () => {
         user.confirmed = true;
-        await expect(ConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ message: 'User is already confirmed' });
+        await expect(SignupConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ message: 'User is already confirmed' });
       });
     });
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'Error' }));
+        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
           Email: { sendRawEmail },
         });
 
-        await expect(ConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'Error sending confirmation email', error: { code: 100, message: 'Error' }});
+        await expect(SignupConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error', error: { code: 100, message: 'some_error' }});
       });
     });
   });
@@ -77,7 +77,7 @@ describe('ConfirmationService', () => {
           Email: { sendRawEmail },
         });
 
-        await ConfirmationService.sendSubscriptionCompletedEmail(user);
+        await SignupConfirmationService.sendSubscriptionCompletedEmail(user);
 
         expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Subject: Welcome'));
         expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
@@ -92,18 +92,21 @@ describe('ConfirmationService', () => {
 
       test('rejects request with USER NOT CONFIRMED status', async () => {
         user.confirmed = false;
-        await expect(ConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 400, message: 'User did not confirm subscription' });
+        await expect(SignupConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 400, message: 'User did not confirm subscription' });
       });
     });
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'Error' }));
+        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
           Email: { sendRawEmail },
         });
 
-        await expect(ConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 100, message: 'Error sending subscription completed email', error: { code: 100, message: 'Error' }});
+        await expect(SignupConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 100, message: 'some_error', error: { code: 100, message: 'some_error' }});
+      });
+    });
+  });
       });
     });
   });

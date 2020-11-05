@@ -6,6 +6,7 @@ import { AuthRequest } from '../routes/v1/Auth';
 import { User } from '../models/User';
 import { PasswordService } from '../services/auth/Password.service';
 import { SignupService } from '../services/auth/Signup.service';
+import { SignupConfirmationService } from '../services/auth/SignupConfirmation.service';
 
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -24,10 +25,8 @@ export const AuthController = {
   },
 
   confirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
-    return SignupService.confirmSignup({
-        id: req.params.id,
-        token: req.query.token as string,
-      })
+    return SignupConfirmationService.verify(req.query.token as string, req.params.id)
+      .then(user => SignupService.confirmSignup(user))
       .then((user) => {
         res.status(200).json({
           item: user.toJson(),
@@ -95,14 +94,12 @@ export const AuthController = {
   },
 
   reset_password: async (req: Request, res: Response): Promise<void> => {
-    const user = await User.query().findById(req.params.id);
-
-    return PasswordService.reset({
+    return PasswordService.verify(req.query.token as string, req.params.id)
+      .then(user => PasswordService.reset({
         user,
-        token: req.query.token as string,
         password: req.body.password,
         password_confirmation: req.body.password_confirmation,
-      })
+      }))
       .then((user) => {
         res.status(200).json({ item: user.toJson() });
       })
@@ -113,6 +110,6 @@ export const AuthController = {
 
         res.status(err.code || 500).json({ code: err.code, message: err.message || 'Error request reset password' });
       });
-  }
+  },
 };
 

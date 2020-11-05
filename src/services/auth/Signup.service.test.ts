@@ -1,7 +1,6 @@
 import { User } from '../../models/User';
 import { expectCountChangedBy, resetDatabase, testService } from '../../../tests/utils';
 import { SignupService } from './Signup.service';
-import { ConfirmationService } from './SignupConfirmation.service';
 
 describe('SignupService', () => {
   describe('signup', () => {
@@ -162,8 +161,7 @@ describe('SignupService', () => {
   });
 
   describe('confirmSignup', () => {
-    let token: string,
-        user: User;
+    let user: User;
 
     beforeEach(async () => {
       testService({
@@ -172,11 +170,10 @@ describe('SignupService', () => {
 
       await resetDatabase();
       user = await User.query().insertAndFetch({ email: 'user@email.com', first_name: 'a', last_name: 'b', hash: '123', confirmed: false });
-      token = ConfirmationService.tokenGenerator(user);
     });
 
     test('returns user as JSON', async () => {
-      const result = await SignupService.confirmSignup({ token, id: String(user.id) });
+      const result = await SignupService.confirmSignup(user);
 
       const updatedUser = await User.query().findById(user.id);
       expect(result).toEqual(updatedUser);
@@ -185,7 +182,7 @@ describe('SignupService', () => {
     test('updates user confirm to true', async () => {
       expect(user.confirmed).toBeFalsy();
 
-      await SignupService.confirmSignup({ token, id: String(user.id) });
+      await SignupService.confirmSignup(user);
 
       const updatedUser = await User.query().findById(user.id);
       expect(updatedUser.confirmed).toBeTruthy();
@@ -198,43 +195,10 @@ describe('SignupService', () => {
         Email: { sendRawEmail },
       });
 
-      await SignupService.confirmSignup({ token, id: String(user.id) });
+      await SignupService.confirmSignup(user);
 
       expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('Welcome'));
       expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`To: ${user.email}`));
-    });
-
-    describe('when token is invalid', () => {
-      let user2, invalidToken;
-
-      beforeEach(async () => {
-        user2 = await User.query().insertAndFetch({ email: 'user2@email.com', first_name: 'a', last_name: 'b', hash: '123', confirmed: false });
-        invalidToken = ConfirmationService.tokenGenerator(user2);
-      });
-
-      test('returns 400 error', async () => {
-        await expect(SignupService.confirmSignup({ token: invalidToken, id: String(user.id) })).rejects.toEqual({
-          code: 401,
-          message: 'Token is invalid',
-        });
-      });
-
-      test('does not send email', async () => {
-        const sendRawEmail = jest.fn();
-        const sendEmail = jest.fn();
-
-        testService({
-          Email: { sendRawEmail, sendEmail },
-        });
-
-        await expect(SignupService.confirmSignup({ token: invalidToken, id: String(user.id) })).rejects.toEqual({
-          code: 401,
-          message: 'Token is invalid',
-        });
-
-        expect(sendRawEmail).not.toHaveBeenCalled();
-        expect(sendEmail).not.toHaveBeenCalled();
-      });
     });
 
     describe('when user is already confirmed', () => {
@@ -243,7 +207,7 @@ describe('SignupService', () => {
       });
 
       test('returns user', async () => {
-        const result = await SignupService.confirmSignup({ token, id: String(user.id) });
+        const result = await SignupService.confirmSignup(user);
 
         const updatedUser = await User.query().findById(user.id);
         expect(result).toEqual(updatedUser);
@@ -257,19 +221,10 @@ describe('SignupService', () => {
           Email: { sendRawEmail, sendEmail },
         });
 
-        await SignupService.confirmSignup({ token, id: String(user.id) });
+        await SignupService.confirmSignup(user);
 
         expect(sendRawEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when user does not exist', () => {
-      test('returns error', async () => {
-        await expect(SignupService.confirmSignup({ token: 'any token', id: '0' })).rejects.toEqual({
-          code: 401,
-          message: 'User not found',
-        });
       });
     });
   });
