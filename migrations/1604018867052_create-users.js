@@ -13,6 +13,8 @@ exports.up = pgm => {
 
     created_at: { type: 'timestamptz', notNull: true, default: 'NOW()' },
   });
+
+  pgm.addIndex('users', ['id', 'email']);
 };
 
 exports.down = pgm => {
