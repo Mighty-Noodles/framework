@@ -1,6 +1,6 @@
 {
-  "watch": ["src"],
-  "ext": "ts",
-  "ignore": [],
-  "exec": "yarn start"
+  "watch": ["src", "lib", "templates"],
+  "ext": "ts,html",
+  "ignore": ["*.test.ts"],
+  "exec": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts"
 }

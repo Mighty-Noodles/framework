@@ -1,5 +1,22 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "paths": {
+      "@auth/*": ["./lib/auth/*"],
+      "@db/*": ["./lib/db/*"],
+      "@email/*": ["./lib/email/*"],
+      "@test/*": ["./lib/test/*"],
+
+      "@controllers/*": ["./src/controllers/*"],
+      "@models/*": ["./src/models/*"],
+      "@services/*": ["./src/services/*"],
+      "@testUtils/*": ["./src/testUtils/*"],
+    }
+  },
+  "include": [
+    "lib/**/*",
+    "src/**/*",
+    "scripts/**/*",
+  ]
 }

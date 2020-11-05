@@ -24,7 +24,7 @@
       {
         "files": [
           "*.test.ts",
-          "*/testUtils/utils.ts"
+          "lib/test/utils.ts"
         ],
         "rules": {
           "@typescript-eslint/no-explicit-any": 0,
