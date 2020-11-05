@@ -1,8 +1,8 @@
 import fs from 'fs';
 
 import { User } from '@auth/models/User';
-import { buildRawEmail } from '@email/services/buildRawEmail';
 import { EmailService } from '@email/services/Email.service';
+import { replaceUserParams } from './replaceUserParams';
 
 const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/password-reset.html', 'utf-8');
 
@@ -20,12 +20,12 @@ export async function sendPasswordResetEmail({ user, token }: TokenizedEmailPara
 
   const html = EMAIL_TEMPLATE.replace(/{RESET_URL}/g, resetLink);
 
-  const message = await buildRawEmail({
+  const message = {
     subject: 'You forgot your password',
     to: user.email,
     from: RESET_PASSWORD_EMAIL_SENDER,
-    html,
-  });
+    html: replaceUserParams(html, user),
+  };
 
   return EmailService.sendRawEmail(message)
     .catch(error => {

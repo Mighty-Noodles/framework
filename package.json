@@ -6,7 +6,7 @@
   "scripts": {
     "ts-node-path": "ts-node -r tsconfig-paths/register",
     "dev": "nodemon",
-    "test": "jest --runInBand --forceExit --detectOpenHandles",
+    "test": "jest --runInBand --forceExit --detectOpenHandles --coverage",
     "test:setup": "yarn ts-node-path ./scripts/test.setup.ts",
     "db:migrate": "node-pg-migrate create",
     "db:migrate:up": "yarn ts-node-path ./scripts/migration/up.ts",

@@ -1,8 +1,8 @@
 import fs from 'fs';
 
 import { User } from '@auth/models/User';
-import { buildRawEmail } from '@email/services/buildRawEmail';
 import { EmailService } from '@email/services/Email.service';
+import { replaceUserParams } from './replaceUserParams';
 
 const SUBSCRIPTION_COMPLETED_TEMPLATE = fs.readFileSync('./templates/emails/subscription-completed.html', 'utf-8');
 
@@ -15,12 +15,12 @@ interface TokenizedEmailParams {
 }
 
 export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
-  const message = await buildRawEmail({
+  const message = {
     subject: 'Welcome',
     to: user.email,
     from: SIGNUP_EMAIL_SENDER,
-    html: SUBSCRIPTION_COMPLETED_TEMPLATE,
-  });
+    html: replaceUserParams(SUBSCRIPTION_COMPLETED_TEMPLATE, user),
+  };
 
   return EmailService.sendRawEmail(message)
     .catch(error => {

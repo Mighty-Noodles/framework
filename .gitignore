@@ -4,3 +4,4 @@ node_modules
 notes.md
 yarn-error.log
 server-build
+coverage

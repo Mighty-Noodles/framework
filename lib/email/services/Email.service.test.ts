@@ -13,12 +13,8 @@ describe('EmailService', () => {
         });
       });
 
-      test('calls TestService sendEmail', () => {
-        expect(EmailService.sendEmail({} as any)).resolves.toEqual('success plain');
-      });
-
-      test('calls TestService sendRawEmail', () => {
-        expect(EmailService.sendRawEmail({} as any)).resolves.toEqual('success raw');
+      test('calls TestService sendEmail', async () => {
+        await expect(EmailService.sendRawEmail({} as any)).resolves.toEqual('success raw');
       });
     });
 
@@ -27,12 +23,12 @@ describe('EmailService', () => {
         testService({});
       });
 
-      test('raises error on sendEmail', () => {
-        expect(EmailService.sendEmail({} as any)).rejects.toEqual('AWS should not be called from test');
+      test('raises error on sendEmail', async () => {
+        await expect(EmailService.sendEmail({} as any)).rejects.toEqual('AWS should not be called from test');
       });
 
-      test('raises error on sendRawEmail', () => {
-        expect(EmailService.sendRawEmail({} as any)).rejects.toEqual('AWS should not be called from test');
+      test('raises error on sendRawEmail', async () => {
+        await expect(EmailService.sendRawEmail({} as any)).rejects.toEqual('AWS should not be called from test');
       });
     })
   });
