@@ -1,5 +1,5 @@
 import { User } from '../../models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '../../../tests/utils';
+import { expectCountChangedBy, resetDatabase, testService } from '../../testUtils/utils';
 import { EarlyAccessSignupService } from './EarlyAccessSignup.service';
 
 describe('EarlyAccessSignupService', () => {

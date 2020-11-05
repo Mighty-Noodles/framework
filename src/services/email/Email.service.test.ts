@@ -1,5 +1,5 @@
 import { EmailService } from './Email.service';
-import { testService } from '../../../tests/utils';
+import { testService } from '../../testUtils/utils';
 
 describe('EmailService', () => {
   describe('Password Reset Request', () => {

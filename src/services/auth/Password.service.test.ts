@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
-import { resetDatabase, testService } from '../../../tests/utils';
+import { resetDatabase, testService } from '../../testUtils/utils';
 
 import { PasswordService } from './Password.service';
 

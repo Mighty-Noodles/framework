@@ -1,4 +1,4 @@
-import { TestService } from '../../../tests/utils';
+import { TestService } from '../../testUtils/utils';
 import {
   sendEmail as awsSendEmail,
   sendRawEmail as awsSendRawEmail,

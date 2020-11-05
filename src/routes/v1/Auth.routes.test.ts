@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt';
 
 import { User } from '../../models/User';
 import { server } from '../../server';
-import { PASSWORD_HASH } from '../../../tests/constants';
-import { countModel, resetDatabase, testService } from '../../../tests/utils';
+import { PASSWORD_HASH } from '../../testUtils/constants';
+import { countModel, resetDatabase, testService } from '../../testUtils/utils';
 import { SignupConfirmationService } from '../../services/auth/SignupConfirmation.service';
 import { PasswordService } from '../../services/auth/Password.service';
 

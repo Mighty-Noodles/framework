@@ -1,5 +1,5 @@
-import { Model } from '../src/models/Model';
-import { User } from '../src/models/User';
+import { Model } from '../models/Model';
+import { User } from '../models/User';
 
 let TestService: any = {};
 
