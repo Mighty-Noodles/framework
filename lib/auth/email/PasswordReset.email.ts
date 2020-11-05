@@ -5,14 +5,15 @@ import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
 import { validateEmailConfig, EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
-const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/password-reset.html', 'utf-8');
+const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/passwordReset.html', 'utf-8');
 
 const {
   RESET_PASSWORD_EMAIL_SENDER,
 } = process.env;
 
-validateEmailConfig('passwordReset', {
+validateEmailConfig('passwordReset', EMAIL_TEMPLATE, {
   action_url: 'http.*{USER_ID}',
+  body: '{ACTION_URL}',
 });
 
 interface TokenizedEmailParams {

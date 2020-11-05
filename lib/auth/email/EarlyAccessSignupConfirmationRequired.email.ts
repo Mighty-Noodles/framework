@@ -5,10 +5,11 @@ import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
 import { EMAIL_CONFIG, validateEmailConfig } from '@email/services/validateEmailConfig';
 
-const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/early-access-signup-confirmation.html', 'utf-8');
+const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/earlyAccessSignupConfirmationRequired.html', 'utf-8');
 
-validateEmailConfig('earlyAccessSignupConfirmationRequired', {
-  action_url: '{USER_ID}',
+validateEmailConfig('earlyAccessSignupConfirmationRequired', EMAIL_TEMPLATE, {
+  action_url: 'http.*{USER_ID}',
+  body: '{ACTION_URL}',
 });
 
 const {

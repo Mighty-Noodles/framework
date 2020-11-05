@@ -7,11 +7,11 @@
     "subject": "Forgot your password?",
     "action_url": "http://localhost:3000/api/v1/password/{USER_ID}/reset"
   },
+  "signupCompleted": {
+    "subject": "Thanks for signing up!"
+  },
   "signupConfirmationRequired": {
     "subject": "One more step",
     "action_url": "http://localhost:3000/api/v1/signup/{USER_ID}/confirm"
-  },
-  "signupCompleted": {
-    "subject": "Thanks for signing up!"
   }
 }

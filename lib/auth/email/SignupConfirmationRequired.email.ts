@@ -5,10 +5,11 @@ import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
 import { EMAIL_CONFIG, validateEmailConfig } from '@email/services/validateEmailConfig';
 
-const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signup-confirmation.html', 'utf-8');
+const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signupConfirmationRequired.html', 'utf-8');
 
-validateEmailConfig('signupConfirmationRequired', {
+validateEmailConfig('signupConfirmationRequired', EMAIL_TEMPLATE, {
   action_url: '{USER_ID}',
+  body: '{ACTION_URL}',
 });
 
 const {

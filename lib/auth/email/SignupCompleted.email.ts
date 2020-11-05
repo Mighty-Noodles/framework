@@ -5,9 +5,9 @@ import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
 import { validateEmailConfig, EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
-const SUBSCRIPTION_COMPLETED_TEMPLATE = fs.readFileSync('./templates/emails/subscription-completed.html', 'utf-8');
+const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signupCompleted.html', 'utf-8');
 
-validateEmailConfig('signupCompleted');
+validateEmailConfig('signupCompleted', EMAIL_TEMPLATE);
 
 const {
   SIGNUP_EMAIL_SENDER,
@@ -24,7 +24,7 @@ export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): 
     subject,
     to: user.email,
     from: SIGNUP_EMAIL_SENDER,
-    html: replaceUserParams(SUBSCRIPTION_COMPLETED_TEMPLATE, user),
+    html: replaceUserParams(EMAIL_TEMPLATE, user),
   };
 
   return EmailService.sendRawEmail(message)
