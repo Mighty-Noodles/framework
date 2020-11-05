@@ -7,6 +7,7 @@ import { User } from '../models/User';
 import { PasswordService } from '../services/auth/Password.service';
 import { SignupService } from '../services/auth/Signup.service';
 import { SignupConfirmationService } from '../services/auth/SignupConfirmation.service';
+import { EarlyAccessSignupService } from '../services/auth/EarlyAccessSignup.service';
 
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -109,6 +110,41 @@ export const AuthController = {
         }
 
         res.status(err.code || 500).json({ code: err.code, message: err.message || 'Error request reset password' });
+      });
+  },
+
+  earlyAccessSignup: async (req: AuthRequest, res: Response): Promise<void> => {
+    return EarlyAccessSignupService.signup(req.body)
+      .then((user: User) => {
+        res.status(200).json({
+          item: user.toJson(),
+        });
+      })
+      .catch((err) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error sending confirmation email', err);
+        }
+        res.status(err.code || 500).json(err.code ? err : { message: err.message });
+      });
+  },
+
+  earlyAccessConfirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
+    return SignupConfirmationService.verify(req.query.token as string, req.params.id)
+      .then(user => EarlyAccessSignupService.confirmSignup({
+        user,
+        password: req.body.password,
+        password_confirmation: req.body.password_confirmation,
+      }))
+      .then((user) => {
+        res.status(200).json({
+          item: user.toJson(),
+        });
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error confirming subscription', error);
+        }
+        res.status(error?.code || 500).json({ code: error?.code || 500, message: error?.message });
       });
   },
 };

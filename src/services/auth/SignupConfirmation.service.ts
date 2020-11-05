@@ -6,6 +6,7 @@ import { EmailService } from '../email/Email.service';
 
 const SIGNUP_CONFIRMATION_TEMPLATE = fs.readFileSync('./templates/emails/signup-confirmation.html', 'utf-8');
 const SUBSCRIPTION_COMPLETED_TEMPLATE = fs.readFileSync('./templates/emails/subscription-completed.html', 'utf-8');
+const EARLY_ACCESS_SIGNUP_CONFIRMATION_TEMPLATE = fs.readFileSync('./templates/emails/early-access-signup-confirmation.html', 'utf-8');
 
 const {
   SIGNUP_CONFIRMATION_EMAIL_SENDER,
@@ -104,6 +105,31 @@ export class SignupConfirmationService {
         return Promise.reject({ code: error?.code || 500 , message: error.message || 'Error sending subscription completed email', error });
       });
   }
+
+  static async sendEarlyAccessSignupConfirmationEmail(user: User): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+    if (user.confirmed) {
+      return Promise.reject({ message: 'User is already confirmed' });
+    }
+
+    const token = this.tokenGenerator(user);
+
+    const confirmUrl = `https://${process.env.DOMAIN}/api/v1/early_access/${user.id}/confirm?token=${token}`;
+
+    const html = EARLY_ACCESS_SIGNUP_CONFIRMATION_TEMPLATE.replace(/CONFIRM_URL/g, confirmUrl);
+
+    const message = await buildRawEmail({
+      subject: 'Please confirm your subscription',
+      to: user.email,
+      from: SIGNUP_CONFIRMATION_EMAIL_SENDER,
+      html,
+    });
+
+    return EmailService.sendRawEmail(message)
+      .catch(error => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Error sending confirmation email', error);
+        }
+        return Promise.reject({ code: error.code || 500 , message: error.message || 'Error sending confirmation email', error });
       });
   }
 }

@@ -212,4 +212,78 @@ describe('/auth route', () => {
         });
     });
   });
+
+  describe('POST /signup/early_access', () => {
+    beforeEach(async () => {
+      await resetDatabase();
+    });
+
+    test('creates and return user without hash', async (done) => {
+      expect.hasAssertions();
+      const initialCount = await countModel(User);
+
+      const sendRawEmail = jest.fn().mockReturnValue(Promise.resolve())
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      request(server)
+        .post('/api/v1/signup/early_access')
+        .send({ email: 'a@a.com', first_name: 'a', last_name: 'b' })
+        .expect(200)
+        .end(async (err, res) => {
+          const { body } = res;
+          expect(body).toMatchObject({
+            item: {
+              id: expect.any(Number),
+              email: 'a@a.com',
+              first_name: 'a',
+              last_name: 'b',
+            },
+          });
+          expect(body.item.hash).not.toBeDefined();
+          const finalCount = await countModel(User);
+
+          expect(finalCount).toEqual(initialCount + 1);
+
+          expect(sendRawEmail).toHaveBeenCalled();
+
+          done(err);
+        });
+    });
+  });
+
+  describe('PUT /signup/early_access/:id/confirm', () => {
+    let user: User, token: string;
+
+    beforeAll(async () => {
+      await resetDatabase();
+      user = await User.query().insertAndFetch(
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', confirmed: false }
+      );
+      token = SignupConfirmationService.tokenGenerator(user);
+    });
+
+    test('responds with a message', async (done) => {
+      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      testService({
+        Email: { sendRawEmail },
+      });
+
+      expect.hasAssertions();
+
+      request(server)
+        .put(`/api/v1/signup/early_access/${user.id}/confirm?token=${token}`)
+        .send({ password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
+        .expect(200)
+        .end(async (err, res) => {
+          expect(res.body).toEqual({ item: user.toJson() })
+
+          const confirmedUser = await User.query().findById(user.id);
+          expect(confirmedUser.confirmed).toBeTruthy();
+
+          done(err);
+        });
+    });
+  });
 });
