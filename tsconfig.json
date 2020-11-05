@@ -7,7 +7,7 @@
       "@auth/*": ["./lib/auth/*"],
       "@db/*": ["./lib/db/*"],
       "@email/*": ["./lib/email/*"],
-      "@test/*": ["./lib/test/*"],
+      "@utils/*": ["lib/utils/*"],
 
       "@controllers/*": ["./src/controllers/*"],
       "@models/*": ["./src/models/*"],

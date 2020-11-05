@@ -6,11 +6,11 @@
     "^@auth/(.*)$": ["<rootDir>/lib/auth/$1"],
     "^@db/(.*)$": ["<rootDir>/lib/db/$1"],
     "^@email/(.*)$": ["<rootDir>/lib/email/$1"],
-    "^@test/(.*)$": ["<rootDir>/lib/test/$1"],
+    "^@utils/(.*)$": ["<rootDir>/lib/utils/$1"],
 
+    "^@routes/(.*)$": ["<rootDir>/src/routes/$1"],
     "^@controllers/(.*)$": ["<rootDir>/src/controllers/$1"],
     "^@models/(.*)$": ["<rootDir>/src/models/$1"],
-    "^@services/(.*)$": ["<rootDir>/src/services/$1"],
-    "^@testUtils/(.*)$": ["<rootDir>/src/testUtils/$1"]
+    "^@services/(.*)$": ["<rootDir>/src/services/$1"]
   }
 }

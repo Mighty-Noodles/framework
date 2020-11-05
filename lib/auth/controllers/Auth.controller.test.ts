@@ -1,6 +1,6 @@
 import { AuthController } from '@auth/controllers/Auth.controller';
 import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@test/utils';
+import { expectCountChangedBy, resetDatabase, testService } from '@utils/testUtils';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { PasswordService } from '@auth/services/Password.service';
 
@@ -173,7 +173,7 @@ describe('AuthController', () => {
     });
 
     test('on error returns message', async () => {
-      const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject());
+      const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
       testService({
         Email: { sendRawEmail },
       });
@@ -187,9 +187,10 @@ describe('AuthController', () => {
 
       await AuthController.request_reset_password(req, res);
 
-      expect(status).toHaveBeenCalledWith(500);
+      expect(status).toHaveBeenCalledWith(100);
       expect(json).toHaveBeenCalledWith({
-        message: 'Error sending email',
+        code: 100,
+        message: 'some_error',
       });
     });
   });

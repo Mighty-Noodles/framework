@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 
 import { server } from '@auth/test/server';
 import { PASSWORD_HASH } from '@auth/test/constants';
-import { countModel, resetDatabase, testService } from '@test/utils';
+import { countModel, resetDatabase, testService } from '@utils/testUtils';
 
 import { User } from '@auth/models/User';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';

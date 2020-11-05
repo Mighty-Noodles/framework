@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@test/utils';
+import { resetDatabase, testService } from '@utils/testUtils';
 
 import { PasswordService } from './Password.service';
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
@@ -91,12 +91,12 @@ describe('PasswordService', () => {
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject('Error'));
+        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
           Email: { sendRawEmail },
         });
 
-        await expect(PasswordService.sendPasswordResetEmail({ email: 'user@email.com' })).rejects.toEqual({ code: 500, message: 'Error sending email', error: 'Error' });
+        await expect(PasswordService.sendPasswordResetEmail({ email: 'user@email.com' })).rejects.toEqual({ code: 100, message: 'some_error' });
       });
     });
   });

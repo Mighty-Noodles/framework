@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { User } from '@auth/models/User';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { PasswordService } from '@auth/services/Password.service';
+import { catchFn } from '@utils/logger';
 
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',
@@ -51,12 +52,7 @@ export const SignupService = {
 
     return SignupConfirmationService.sendSignupConfirmationEmail(user)
       .then(() => user)
-      .catch((err) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending confirmation email', err);
-        }
-        return Promise.reject({ code: err.code || 500, message: 'Error sending confirmation email' });
-      });
+      .catch(catchFn('Error sending confirmation email'));
   },
 
   confirmSignup: async (user: User): Promise<User> => {
@@ -70,7 +66,7 @@ export const SignupService = {
 
       return Promise.resolve(updatedUser);
     } catch (err) {
-      return Promise.reject({ code: err?.code || 500, message: err?.message || 'Error confirming subscription' });
+      return catchFn('Error confirming subscription')(err);
     }
   },
 }

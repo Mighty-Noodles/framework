@@ -1,5 +1,5 @@
 import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@test/utils';
+import { expectCountChangedBy, resetDatabase, testService } from '@utils/testUtils';
 import { EarlyAccessSignupService } from '@auth/services/EarlyAccessSignup.service';
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 

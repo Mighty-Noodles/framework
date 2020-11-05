@@ -4,6 +4,7 @@ import { User } from '@auth/models/User';
 import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
 import { validateEmailConfig, EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { catchFn } from '@utils/logger';
 
 const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signupCompleted.html', 'utf-8');
 
@@ -28,10 +29,5 @@ export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): 
   };
 
   return EmailService.sendRawEmail(message)
-    .catch(error => {
-      if (process.env.NODE_ENV !== 'test') {
-        console.error('Error sending subscription completed email', error);
-      }
-      return Promise.reject({ code: error?.code || 500 , message: error.message || 'Error sending subscription completed email', error });
-    });
+    .catch(catchFn('Error sending subscription completed email'));
 }

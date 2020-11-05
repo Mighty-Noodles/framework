@@ -8,6 +8,7 @@ import { PasswordService } from '@auth/services/Password.service';
 import { SignupService } from '@auth/services/Signup.service';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { EarlyAccessSignupService } from '@auth/services/EarlyAccessSignup.service';
+import { controllerCatchFn } from '@utils/logger';
 
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -17,12 +18,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch((err) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending confirmation email', err);
-        }
-        res.status(err.code || 500).json(err.code ? err : { message: err.message });
-      });
+      .catch(controllerCatchFn('Error on signup', res));
   },
 
   confirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -33,12 +29,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch((error) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error confirming subscription', error);
-        }
-        res.status(error?.code || 500).json({ code: error?.code || 500, message: error?.message });
-      });
+      .catch(controllerCatchFn('Error on signup confirmation', res));
   },
 
   signin: (req: Request, res: Response, next: NextFunction): void => {
@@ -85,13 +76,7 @@ export const AuthController = {
       .then(() => {
         res.status(200).json({ message: 'An email with a password reset link was sent to your inbox' });
       })
-      .catch((err) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error requesting reset password', err);
-        }
-
-        res.status(500).json({ message: err?.message || 'Error requesting reset password' });
-      });
+      .catch(controllerCatchFn('Error on reset password request', res));
   },
 
   reset_password: async (req: Request, res: Response): Promise<void> => {
@@ -104,13 +89,7 @@ export const AuthController = {
       .then((user) => {
         res.status(200).json({ item: user.toJson() });
       })
-      .catch((err) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error request reset password', err);
-        }
-
-        res.status(err.code || 500).json({ code: err.code, message: err.message || 'Error request reset password' });
-      });
+      .catch(controllerCatchFn('Error on reset password', res));
   },
 
   earlyAccessSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -120,12 +99,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch((err) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending confirmation email', err);
-        }
-        res.status(err.code || 500).json(err.code ? err : { message: err.message });
-      });
+      .catch(controllerCatchFn('Error on early access signup', res));
   },
 
   earlyAccessConfirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -140,12 +114,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch((error) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error confirming subscription', error);
-        }
-        res.status(error?.code || 500).json({ code: error?.code || 500, message: error?.message });
-      });
+      .catch(controllerCatchFn('Error on early access signup confirmation', res));
   },
 };
 

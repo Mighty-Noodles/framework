@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from 'src/server';
 import { User } from '@auth/models/User';
-import { resetDatabase } from '@test/utils';
+import { resetDatabase } from '@utils/testUtils';
 
 describe('/auth route definitions', () => {
   let user: User;

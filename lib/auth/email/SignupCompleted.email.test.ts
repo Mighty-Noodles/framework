@@ -1,5 +1,5 @@
 import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@test/utils';
+import { resetDatabase, testService } from '@utils/testUtils';
 import { sendSignupCompletedEmail } from '@auth/email/SignupCompleted.email';
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
@@ -36,7 +36,6 @@ describe('SignupCompleted Email', () => {
       await expect(sendSignupCompletedEmail({ user })).rejects.toEqual({
         code: 100,
         message: 'some_error',
-        error: { code: 100, message: 'some_error' },
       });
     });
   });

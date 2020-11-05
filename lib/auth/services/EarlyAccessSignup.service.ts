@@ -3,6 +3,8 @@ import { SignupConfirmationService } from '@auth/services/SignupConfirmation.ser
 import { PasswordService } from '@auth/services/Password.service';
 import { SignupService } from '@auth/services/Signup.service';
 
+import { catchFn } from '@utils/logger';
+
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',
   'email',
@@ -43,12 +45,7 @@ export const EarlyAccessSignupService = {
 
     return SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user)
       .then(() => user)
-      .catch((err) => {
-        if (process.env.NODE_ENV !== 'test') {
-          console.error('Error sending early access confirmation email', err);
-        }
-        return Promise.reject({ code: err.code || 500, message: err.message || 'Error sending early access confirmation email' });
-      });
+      .catch(catchFn('Error sending early access confirmation email'));
   },
 
   confirmSignup: async ({ user, password, password_confirmation}: SignupConfirmationParams): Promise<User> => {

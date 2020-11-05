@@ -1,5 +1,5 @@
 import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@test/utils';
+import { resetDatabase, testService } from '@utils/testUtils';
 
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
@@ -46,7 +46,7 @@ describe('SignupConfirmationService', () => {
           Email: { sendRawEmail },
         });
 
-        await expect(SignupConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error', error: { code: 100, message: 'some_error' }});
+        await expect(SignupConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });
       });
     });
   });
@@ -92,7 +92,7 @@ describe('SignupConfirmationService', () => {
           Email: { sendRawEmail },
         });
 
-        await expect(SignupConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 100, message: 'some_error', error: { code: 100, message: 'some_error' }});
+        await expect(SignupConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });
       });
     });
   });
@@ -138,7 +138,7 @@ describe('SignupConfirmationService', () => {
           Email: { sendRawEmail },
         });
 
-        await expect(SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error', error: { code: 100, message: 'some_error' }});
+        await expect(SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });
       });
     });
   });

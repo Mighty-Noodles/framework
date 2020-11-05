@@ -1,5 +1,5 @@
 import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@test/utils';
+import { expectCountChangedBy, resetDatabase, testService } from '@utils/testUtils';
 import { SignupService } from '@auth/services/Signup.service';
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
 
@@ -44,14 +44,14 @@ describe('SignupService', () => {
       });
 
       test('returns error when email delivery fails', async () => {
-        const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject('some_error'));
+        const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
           Email: { sendRawEmail },
         });
 
         await expect(SignupService.signup(params)).rejects.toEqual({
-          code: 500,
-          message: 'Error sending confirmation email',
+          code: 100,
+          message: 'some_error',
         });
       });
     });
@@ -120,7 +120,7 @@ describe('SignupService', () => {
           });
 
           test('returns error when email delivery fails', async () => {
-            const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject('some_error'));
+            const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
             testService({
               Email: { sendRawEmail },
             });
@@ -128,8 +128,8 @@ describe('SignupService', () => {
             await expect(
               expectCountChangedBy(User, () => SignupService.signup(params), 0)
             ).rejects.toEqual({
-              code: 500,
-              message: 'Error sending confirmation email',
+              code: 100,
+              message: 'some_error',
             });
           });
         });
