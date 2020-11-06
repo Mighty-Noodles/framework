@@ -9,10 +9,10 @@
       "@email/*": ["./lib/email/*"],
       "@utils/*": ["lib/utils/*"],
 
+      "@routes/*": ["./src/routes/*"],
       "@controllers/*": ["./src/controllers/*"],
       "@models/*": ["./src/models/*"],
       "@services/*": ["./src/services/*"],
-      "@testUtils/*": ["./src/testUtils/*"],
     }
   },
   "include": [
