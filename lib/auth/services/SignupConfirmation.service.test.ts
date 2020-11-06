@@ -1,5 +1,5 @@
 import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@utils/testUtils';
+import { resetDatabase, testService } from '@libUtils/testUtils';
 
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';

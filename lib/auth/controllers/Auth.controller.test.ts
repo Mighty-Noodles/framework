@@ -1,6 +1,6 @@
 import { AuthController } from '@auth/controllers/Auth.controller';
 import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@utils/testUtils';
+import { expectCountChangedBy, resetDatabase, testService } from '@libUtils/testUtils';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { PasswordService } from '@auth/services/Password.service';
 

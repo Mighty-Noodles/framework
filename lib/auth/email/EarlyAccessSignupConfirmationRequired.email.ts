@@ -4,7 +4,7 @@ import { User } from '@auth/models/User';
 import { EmailService } from '@email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
 import { EMAIL_CONFIG, validateEmailConfig } from '@email/services/validateEmailConfig';
-import { catchFn } from '@utils/logger';
+import { catchFn } from '@libUtils/logger';
 
 const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/earlyAccessSignupConfirmationRequired.html', 'utf-8');
 

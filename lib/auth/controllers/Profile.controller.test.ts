@@ -1,6 +1,6 @@
 import { ProfileController } from '@auth/controllers/Profile.controller';
 import { User } from '@auth/models/User';
-import { resetDatabase } from '@utils/testUtils';
+import { resetDatabase } from '@libUtils/testUtils';
 
 describe('ProfileController', () => {
   let user;

@@ -1,5 +1,4 @@
-import { Model } from '@db/Model';
-import { User } from '@auth/models/User';
+import { knex, Model } from '@db/Model';
 
 let TestService: any = {};
 
@@ -27,5 +26,5 @@ export async function expectCountChangedBy(ModelClass: typeof Model, cb: () => a
 }
 
 export async function resetDatabase(): Promise<void> {
-  await User.query().delete();
+  await knex.raw('TRUNCATE TABLE users CASCADE');
 }

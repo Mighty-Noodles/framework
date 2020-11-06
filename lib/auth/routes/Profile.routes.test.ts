@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from '@auth/test/server';
 import { jwtHeader } from '@auth/test/constants';
-import { resetDatabase } from '@utils/testUtils';
+import { resetDatabase } from '@libUtils/testUtils';
 
 import { User } from '@auth/models/User';
 

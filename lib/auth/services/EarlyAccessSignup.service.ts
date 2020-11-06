@@ -3,7 +3,7 @@ import { SignupConfirmationService } from '@auth/services/SignupConfirmation.ser
 import { PasswordService } from '@auth/services/Password.service';
 import { SignupService } from '@auth/services/Signup.service';
 
-import { catchFn } from '@utils/logger';
+import { catchFn } from '@libUtils/logger';
 
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',

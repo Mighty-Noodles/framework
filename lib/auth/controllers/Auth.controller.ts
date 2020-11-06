@@ -8,7 +8,7 @@ import { PasswordService } from '@auth/services/Password.service';
 import { SignupService } from '@auth/services/Signup.service';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { EarlyAccessSignupService } from '@auth/services/EarlyAccessSignup.service';
-import { controllerCatchFn } from '@utils/logger';
+import { controllerCatchFn } from '@libUtils/logger';
 
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<void> => {

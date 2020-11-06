@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { User } from '@auth/models/User';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { PasswordService } from '@auth/services/Password.service';
-import { catchFn } from '@utils/logger';
+import { catchFn } from '@libUtils/logger';
 
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',

@@ -7,12 +7,13 @@
       "@auth/*": ["./lib/auth/*"],
       "@db/*": ["./lib/db/*"],
       "@email/*": ["./lib/email/*"],
-      "@utils/*": ["lib/utils/*"],
+      "@libUtils/*": ["./lib/libUtils/*"],
 
       "@routes/*": ["./src/routes/*"],
       "@controllers/*": ["./src/controllers/*"],
       "@models/*": ["./src/models/*"],
       "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": [
