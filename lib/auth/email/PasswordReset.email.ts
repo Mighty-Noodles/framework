@@ -23,7 +23,7 @@ interface TokenizedEmailParams {
   token: string;
 }
 
-export async function sendPasswordResetEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+export async function sendPasswordResetEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendEmail>> {
   const { subject, action_url } = EMAIL_CONFIG['passwordReset'];
 
 
@@ -42,6 +42,6 @@ export async function sendPasswordResetEmail({ user, token }: TokenizedEmailPara
     html: replaceUserParams(html, user),
   };
 
-  return EmailService.sendRawEmail(message)
+  return EmailService.sendEmail(message)
     .catch(catchFn('Error sending password reset email'));
 }

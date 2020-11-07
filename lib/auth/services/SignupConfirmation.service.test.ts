@@ -17,14 +17,14 @@ describe('SignupConfirmationService', () => {
 
     describe('success', () => {
       test('sends email with password reset request link', async() => {
-        const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+        const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await SignupConfirmationService.sendSignupConfirmationEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupConfirmationRequired.subject }));
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupConfirmationRequired.subject }));
       });
     });
 
@@ -41,9 +41,9 @@ describe('SignupConfirmationService', () => {
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
+        const sendEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expect(SignupConfirmationService.sendSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });
@@ -63,14 +63,14 @@ describe('SignupConfirmationService', () => {
 
     describe('success', () => {
       test('sends email', async() => {
-        const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+        const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await SignupConfirmationService.sendSubscriptionCompletedEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
       });
     });
 
@@ -87,9 +87,9 @@ describe('SignupConfirmationService', () => {
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
+        const sendEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expect(SignupConfirmationService.sendSubscriptionCompletedEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });
@@ -109,14 +109,14 @@ describe('SignupConfirmationService', () => {
 
     describe('success', () => {
       test('sends email with password reset request link', async() => {
-        const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+        const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
       });
     });
 
@@ -133,9 +133,9 @@ describe('SignupConfirmationService', () => {
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
+        const sendEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expect(SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });

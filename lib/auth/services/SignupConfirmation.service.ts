@@ -45,7 +45,7 @@ export class SignupConfirmationService {
     return `${process.env.JWT_SECRET}-${user.id}-signup-confirmation`;
   }
 
-  static async sendSignupConfirmationEmail(user: User): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+  static async sendSignupConfirmationEmail(user: User): Promise<ReturnType<typeof EmailService.sendEmail>> {
     if (user.confirmed) {
       return Promise.reject({ message: 'User is already confirmed' });
     }
@@ -55,7 +55,7 @@ export class SignupConfirmationService {
     return sendSignupConfirmationRequiredEmail({ user, token });
   }
 
-  static async sendSubscriptionCompletedEmail(user: User): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+  static async sendSubscriptionCompletedEmail(user: User): Promise<ReturnType<typeof EmailService.sendEmail>> {
     if (!user.confirmed) {
       return Promise.reject({ code: 400, message: 'User did not confirm subscription' });
     }
@@ -63,7 +63,7 @@ export class SignupConfirmationService {
     return sendSignupCompletedEmail({ user });
   }
 
-  static async sendEarlyAccessSignupConfirmationEmail(user: User): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+  static async sendEarlyAccessSignupConfirmationEmail(user: User): Promise<ReturnType<typeof EmailService.sendEmail>> {
     if (user.confirmed) {
       return Promise.reject({ message: 'User is already confirmed' });
     }

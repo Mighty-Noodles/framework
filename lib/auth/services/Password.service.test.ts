@@ -72,14 +72,14 @@ describe('PasswordService', () => {
       test('sends email with password reset request link', async() => {
         delete process.env.RESET_PASSWORD_EXPIRATION;
 
-        const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+        const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await PasswordService.sendPasswordResetEmail({ email: 'user@email.com' });
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.passwordReset.subject }));
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.passwordReset.subject }));
       });
     });
 
@@ -91,9 +91,9 @@ describe('PasswordService', () => {
 
     describe('on error', () => {
       test('return error message', async () => {
-        const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
+        const sendEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expect(PasswordService.sendPasswordResetEmail({ email: 'user@email.com' })).rejects.toEqual({ code: 100, message: 'some_error' });

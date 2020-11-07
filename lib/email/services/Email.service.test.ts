@@ -8,13 +8,13 @@ describe('EmailService', () => {
         testService({
           Email: {
             sendEmail: () => Promise.resolve('success plain'),
-            sendRawEmail: () => Promise.resolve('success raw'),
+            sendEmail: () => Promise.resolve('success raw'),
           },
         });
       });
 
       test('calls TestService sendEmail', async () => {
-        await expect(EmailService.sendRawEmail({} as any)).resolves.toEqual('success raw');
+        await expect(EmailService.sendEmail({} as any)).resolves.toEqual('success raw');
       });
     });
 
@@ -23,8 +23,8 @@ describe('EmailService', () => {
         testService({});
       });
 
-      test('raises error on sendRawEmail', async () => {
-        await expect(EmailService.sendRawEmail({} as any)).rejects.toEqual('AWS should not be called from test');
+      test('raises error on sendEmail', async () => {
+        await expect(EmailService.sendEmail({} as any)).rejects.toEqual('AWS should not be called from test');
       });
     })
   });

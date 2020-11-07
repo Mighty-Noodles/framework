@@ -16,7 +16,7 @@ describe('AuthController', () => {
 
     beforeEach(() => {
       testService({
-        Email: { sendRawEmail: () => Promise.resolve() },
+        Email: { sendEmail: () => Promise.resolve() },
       });
     });
 
@@ -52,14 +52,14 @@ describe('AuthController', () => {
     });
 
     test('sends confirmation email', async () => {
-      const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+      const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       await expectCountChangedBy(User, () => AuthController.signup(req, res), 1);
 
-      expect(sendRawEmail).toHaveBeenCalled();
+      expect(sendEmail).toHaveBeenCalled();
     });
   });
 
@@ -77,9 +77,9 @@ describe('AuthController', () => {
     test.todo('when JSON');
 
     test('sends email with confirmation link', async() => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       const redirect = jest.fn();
@@ -123,9 +123,9 @@ describe('AuthController', () => {
     });
 
     test('sends email with password reset request link', async() => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       const status = jest.fn();
@@ -137,7 +137,7 @@ describe('AuthController', () => {
 
       await AuthController.request_reset_password(req, res);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.passwordReset.subject }));
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.passwordReset.subject }));
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({
@@ -146,9 +146,9 @@ describe('AuthController', () => {
     });
 
     test('when email is not present', async () => {
-      const sendRawEmail = jest.fn();
+      const sendEmail = jest.fn();
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       const status = jest.fn();
@@ -164,13 +164,13 @@ describe('AuthController', () => {
       expect(json).toHaveBeenCalledWith({
         message: 'An email with a password reset link was sent to your inbox',
       });
-      expect(sendRawEmail).not.toHaveBeenCalled();
+      expect(sendEmail).not.toHaveBeenCalled();
     });
 
     test('on error returns message', async () => {
-      const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
+      const sendEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       const status = jest.fn();
@@ -247,7 +247,7 @@ describe('AuthController', () => {
 
     beforeEach(() => {
       testService({
-        Email: { sendRawEmail: () => Promise.resolve() },
+        Email: { sendEmail: () => Promise.resolve() },
       });
     });
 
@@ -283,14 +283,14 @@ describe('AuthController', () => {
     });
 
     test('sends confirmation email', async () => {
-      const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+      const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       await expectCountChangedBy(User, () => AuthController.earlyAccessSignup(req, res), 1);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
     });
   });
 
@@ -305,9 +305,9 @@ describe('AuthController', () => {
     });
 
     test('sends email with confirmation link', async() => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       const status = jest.fn();
@@ -322,7 +322,7 @@ describe('AuthController', () => {
 
       await AuthController.earlyAccessConfirmSignup(req, res);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({

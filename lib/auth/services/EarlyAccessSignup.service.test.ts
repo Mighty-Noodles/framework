@@ -8,7 +8,7 @@ describe('EarlyAccessSignupService', () => {
     beforeEach(async () => {
       await resetDatabase();
       testService({
-        Email: { sendRawEmail: () => Promise.resolve() },
+        Email: { sendEmail: () => Promise.resolve() },
       });
     });
 
@@ -31,19 +31,19 @@ describe('EarlyAccessSignupService', () => {
       });
 
       test('sends confirmation email', async () => {
-        const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+        const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 1);
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
       });
 
       test('returns error when email delivery fails', async () => {
-        const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
+        const sendEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expect(EarlyAccessSignupService.signup(params)).rejects.toEqual({
@@ -104,20 +104,20 @@ describe('EarlyAccessSignupService', () => {
           });
 
           test('sends confirmation email', async () => {
-            const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+            const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
             testService({
-              Email: { sendRawEmail },
+              Email: { sendEmail },
             });
 
             await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 0);
 
-            expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
+            expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
           });
 
           test('returns error when email delivery fails', async () => {
-            const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
+            const sendEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
             testService({
-              Email: { sendRawEmail },
+              Email: { sendEmail },
             });
 
             await expect(
@@ -138,7 +138,7 @@ describe('EarlyAccessSignupService', () => {
 
     beforeEach(async () => {
       testService({
-        Email: { sendRawEmail: () => Promise.resolve() },
+        Email: { sendEmail: () => Promise.resolve() },
       });
 
       await resetDatabase();
@@ -163,15 +163,15 @@ describe('EarlyAccessSignupService', () => {
       });
 
       test('sends subscription completed email', async () => {
-        const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+        const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
 
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await EarlyAccessSignupService.confirmSignup({ user, password, password_confirmation: password });
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
       });
     });
 
@@ -204,11 +204,11 @@ describe('EarlyAccessSignupService', () => {
       });
 
       test('does not send email', async () => {
-        const sendRawEmail = jest.fn();
+        const sendEmail = jest.fn();
         const sendEmail = jest.fn();
 
         testService({
-          Email: { sendRawEmail, sendEmail },
+          Email: { sendEmail, sendEmail },
         });
 
         await expect(EarlyAccessSignupService.confirmSignup({ user })).rejects.toEqual({
@@ -216,7 +216,7 @@ describe('EarlyAccessSignupService', () => {
           message: 'Password must contain at least 8 characters',
         });
 
-        expect(sendRawEmail).not.toHaveBeenCalled();
+        expect(sendEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
       });
     });
@@ -235,16 +235,16 @@ describe('EarlyAccessSignupService', () => {
       });
 
       test('does not send email', async () => {
-        const sendRawEmail = jest.fn();
+        const sendEmail = jest.fn();
         const sendEmail = jest.fn();
 
         testService({
-          Email: { sendRawEmail, sendEmail },
+          Email: { sendEmail, sendEmail },
         });
 
         await EarlyAccessSignupService.confirmSignup({ user, password, password_confirmation: password });
 
-        expect(sendRawEmail).not.toHaveBeenCalled();
+        expect(sendEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
       });
     });

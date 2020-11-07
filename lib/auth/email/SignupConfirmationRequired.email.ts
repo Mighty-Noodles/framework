@@ -23,7 +23,7 @@ interface TokenizedEmailParams {
   token: string;
 }
 
-export async function sendSignupConfirmationRequiredEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+export async function sendSignupConfirmationRequiredEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendEmail>> {
   const { subject, action_url } = EMAIL_CONFIG['signupConfirmationRequired'];
 
   const actionUrl = action_url
@@ -40,6 +40,6 @@ export async function sendSignupConfirmationRequiredEmail({ user, token }: Token
     html: replaceUserParams(html, user),
   };
 
-  return EmailService.sendRawEmail(message)
+  return EmailService.sendEmail(message)
     .catch(catchFn('Error sending subscription confirmation required email'));
 }

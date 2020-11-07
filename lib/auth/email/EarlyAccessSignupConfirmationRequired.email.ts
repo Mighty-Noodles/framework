@@ -23,7 +23,7 @@ interface TokenizedEmailParams {
   token: string;
 }
 
-export async function sendEarlyAccessSignupConfirmationRequiredEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+export async function sendEarlyAccessSignupConfirmationRequiredEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendEmail>> {
   const { subject, action_url } = EMAIL_CONFIG['earlyAccessSignupConfirmationRequired'];
 
   const actionUrl = action_url
@@ -41,6 +41,6 @@ export async function sendEarlyAccessSignupConfirmationRequiredEmail({ user, tok
     html: replaceUserParams(html, user),
   };
 
-  return EmailService.sendRawEmail(message)
+  return EmailService.sendEmail(message)
     .catch(catchFn('Error sending confirmation email'));
 }

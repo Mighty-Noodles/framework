@@ -20,9 +20,9 @@ describe('/auth route', () => {
       expect.hasAssertions();
       const initialCount = await countModel(User);
 
-      const sendRawEmail = jest.fn().mockReturnValue(Promise.resolve())
+      const sendEmail = jest.fn().mockReturnValue(Promise.resolve())
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       request(server)
@@ -44,7 +44,7 @@ describe('/auth route', () => {
 
           expect(finalCount).toEqual(initialCount + 1);
 
-          expect(sendRawEmail).toHaveBeenCalled();
+          expect(sendEmail).toHaveBeenCalled();
 
           done(err);
         });
@@ -128,9 +128,9 @@ describe('/auth route', () => {
     });
 
     test('responds with a message', async (done) => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       expect.hasAssertions();
@@ -159,9 +159,9 @@ describe('/auth route', () => {
     });
 
     test('responds with a message', async (done) => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       expect.hasAssertions();
@@ -190,9 +190,9 @@ describe('/auth route', () => {
     });
 
     test('responds with a message', async (done) => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       expect.hasAssertions();
@@ -221,9 +221,9 @@ describe('/auth route', () => {
       expect.hasAssertions();
       const initialCount = await countModel(User);
 
-      const sendRawEmail = jest.fn().mockReturnValue(Promise.resolve())
+      const sendEmail = jest.fn().mockReturnValue(Promise.resolve())
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       request(server)
@@ -245,7 +245,7 @@ describe('/auth route', () => {
 
           expect(finalCount).toEqual(initialCount + 1);
 
-          expect(sendRawEmail).toHaveBeenCalled();
+          expect(sendEmail).toHaveBeenCalled();
 
           done(err);
         });
@@ -264,9 +264,9 @@ describe('/auth route', () => {
     });
 
     test('responds with a message', async (done) => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       expect.hasAssertions();

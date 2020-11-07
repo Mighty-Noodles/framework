@@ -16,14 +16,14 @@ describe('SignupConfirmationRequired Email', () => {
 
   describe('success', () => {
     test('sends email with password reset request link', async() => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       await sendSignupConfirmationRequiredEmail({ user, token });
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
         html: expect.stringMatching(EMAIL_CONFIG.signupConfirmationRequired.action_url
             .replace(/{USER_ID}/g, String(user.id))
             .replace(/{DOMAIN}/g, process.env.EMAIL_DOMAIN)
@@ -37,9 +37,9 @@ describe('SignupConfirmationRequired Email', () => {
   });
   describe('on error', () => {
     test('return error message', async () => {
-      const sendRawEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
+      const sendEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       await expect(sendSignupConfirmationRequiredEmail({ user, token })).rejects.toEqual({

@@ -18,7 +18,7 @@ interface TokenizedEmailParams {
   user: User;
 }
 
-export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
+export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendEmail>> {
   const { subject } = EMAIL_CONFIG['signupCompleted'];
 
   const message = {
@@ -28,6 +28,6 @@ export async function sendSignupCompletedEmail({ user }: TokenizedEmailParams): 
     html: replaceUserParams(EMAIL_TEMPLATE, user),
   };
 
-  return EmailService.sendRawEmail(message)
+  return EmailService.sendEmail(message)
     .catch(catchFn('Error sending subscription completed email'));
 }

@@ -18,9 +18,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export class EmailService {
-  static async sendRawEmail(emailParams: Mail.Options): Promise<any> {
+  static async sendEmail(emailParams: Mail.Options): Promise<any> {
     if (process.env.NODE_ENV === 'test') {
-      return TestService?.Email?.sendRawEmail(emailParams) || Promise.reject('AWS should not be called from test');
+      return TestService?.Email?.sendEmail(emailParams) || Promise.reject('AWS should not be called from test');
     }
 
     return transporter.sendMail(emailParams as any)

@@ -8,7 +8,7 @@ describe('SignupService', () => {
     beforeEach(async () => {
       await resetDatabase();
       testService({
-        Email: { sendRawEmail: () => Promise.resolve() },
+        Email: { sendEmail: () => Promise.resolve() },
       });
     });
 
@@ -33,20 +33,20 @@ describe('SignupService', () => {
       });
 
       test('sends confirmation email', async () => {
-        const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+        const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expectCountChangedBy(User, () => SignupService.signup(params), 1);
 
-        expect(sendRawEmail).toHaveBeenCalled();
+        expect(sendEmail).toHaveBeenCalled();
       });
 
       test('returns error when email delivery fails', async () => {
-        const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
+        const sendEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
         testService({
-          Email: { sendRawEmail },
+          Email: { sendEmail },
         });
 
         await expect(SignupService.signup(params)).rejects.toEqual({
@@ -109,20 +109,20 @@ describe('SignupService', () => {
           });
 
           test('sends confirmation email', async () => {
-            const sendRawEmail = jest.fn().mockImplementation(() => Promise.resolve());
+            const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
             testService({
-              Email: { sendRawEmail },
+              Email: { sendEmail },
             });
 
             await expectCountChangedBy(User, () => SignupService.signup(params), 0);
 
-            expect(sendRawEmail).toHaveBeenCalled();
+            expect(sendEmail).toHaveBeenCalled();
           });
 
           test('returns error when email delivery fails', async () => {
-            const sendRawEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
+            const sendEmail = jest.fn().mockImplementation(() => Promise.reject({ code: 100, message: 'some_error' }));
             testService({
-              Email: { sendRawEmail },
+              Email: { sendEmail },
             });
 
             await expect(
@@ -166,7 +166,7 @@ describe('SignupService', () => {
 
     beforeEach(async () => {
       testService({
-        Email: { sendRawEmail: () => Promise.resolve() },
+        Email: { sendEmail: () => Promise.resolve() },
       });
 
       await resetDatabase();
@@ -190,15 +190,15 @@ describe('SignupService', () => {
     });
 
     test('sends subscription completed email', async () => {
-      const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
 
       testService({
-        Email: { sendRawEmail },
+        Email: { sendEmail },
       });
 
       await SignupService.confirmSignup(user);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
     });
 
     describe('when user is already confirmed', () => {
@@ -214,16 +214,16 @@ describe('SignupService', () => {
       });
 
       test('does not send email', async () => {
-        const sendRawEmail = jest.fn();
+        const sendEmail = jest.fn();
         const sendEmail = jest.fn();
 
         testService({
-          Email: { sendRawEmail, sendEmail },
+          Email: { sendEmail, sendEmail },
         });
 
         await SignupService.confirmSignup(user);
 
-        expect(sendRawEmail).not.toHaveBeenCalled();
+        expect(sendEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
       });
     });
