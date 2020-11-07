@@ -127,10 +127,8 @@ const getCredentials = (): Promise<Credentials> => {
       return resolve({ token, user });
     }
 
-    chrome.storage.sync.get(['token', 'user'], function({ token, user }) {
-      console.log('getCredentials', token, user);
-      resolve({ token, user });
-    });
+    chrome.storage.sync
+      .get(['token', 'user'], (credentials: Credentials) => resolve(credentials));
   });
 };
 

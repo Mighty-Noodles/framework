@@ -5,5 +5,4 @@ notes.md
 yarn-error.log
 build
 coverage
-public/sdk/*.js
 build-server
