@@ -7,6 +7,18 @@ interface Config {
   mode?: 'no-cors' | 'cors' | 'same-origin',
 }
 
+interface User {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+}
+
+interface Credentials {
+  token: string;
+  user: User;
+}
+
 const DEFAULT_CONFIG: Config = {
   host: '',
   version: 1,
@@ -65,13 +77,15 @@ const confirmEarlyAccessSignup = ({ host, apiPrefix }: Config) => (params: Early
   return put(url, params);
 };
 
-const login = ({ host, apiPrefix }: Config) => (params: LoginParams): Promise<any> => {
+const login = ({ host, apiPrefix }: Config) => (params: LoginParams): Promise<User> => {
   const url = `${host}${apiPrefix}/signin`;
   return post(url, params)
-    .then(async ({ item, token }) => {
-      return saveToken(token, item).then(() => item);
-    });
+    .then(saveCredentials);
 };
+
+const isLoggedIn = (): Promise<boolean> => {
+  return getCredentials().then(({ token }) => !!token);
+}
 
 const forgotPassword = ({ host, apiPrefix }: Config) => (params: ForgotPaswordParams): Promise<any> => {
   const url = `${host}${apiPrefix}/password/forgot`;
@@ -88,24 +102,36 @@ const profile = ({ host, apiPrefix }: Config) => (): Promise<any> => {
   return get(url, { auth: true });
 };
 
-const saveToken = (token: string, user: any): Promise<void> => {
-  localStorage.setItem('token', token);
-  localStorage.setItem('user', user);
-
-  const chromePromise = new Promise<void>((resolve) => {
+const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
+  return new Promise<any>((resolve) => {
     if (!chrome) {
-      resolve();
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      return resolve(user);
     }
 
     chrome.storage.sync.set({
       user,
       token,
     }, function() {
-      resolve();
+      resolve(user);
     });
   });
+};
 
-  return chromePromise;
+const getCredentials = (): Promise<Credentials> => {
+  return new Promise((resolve) => {
+    if (!chrome) {
+      const token = localStorage.getItem('token');
+      const user: User = JSON.parse(localStorage.getItem('user'));
+      return resolve({ token, user });
+    }
+
+    chrome.storage.sync.get(['token', 'user'], function({ token, user }) {
+      console.log('getCredentials', token, user);
+      resolve({ token, user });
+    });
+  });
 };
 
 const logout = (): Promise<void> => {
@@ -114,7 +140,7 @@ const logout = (): Promise<void> => {
 
   const chromePromise = new Promise<void>((resolve) => {
     if (!chrome) {
-      resolve();
+      return resolve();
     }
 
     chrome.storage.sync.set({
@@ -136,6 +162,7 @@ interface IAuthSDK {
 
   login: (params: LoginParams) => Promise<any>,
   logout: () => Promise<any>,
+  isLoggedIn: () => Promise<boolean>
 
   forgotPassword: (params: ForgotPaswordParams) => Promise<any>,
   resetPassword: (params: ResetPasswordParams) => Promise<any>,
@@ -153,7 +180,8 @@ const AuthSDK = (config = DEFAULT_CONFIG): IAuthSDK => {
     confirmEarlyAccessSignup: confirmEarlyAccessSignup(config),
 
     login: login(config),
-    logout: logout,
+    logout,
+    isLoggedIn,
 
     forgotPassword: forgotPassword(config),
     resetPassword: resetPassword(config),
