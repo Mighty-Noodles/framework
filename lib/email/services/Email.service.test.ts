@@ -13,7 +13,7 @@ describe('EmailService', () => {
       });
 
       test('calls TestService sendEmail', async () => {
-        await expect(EmailService.sendEmail({} as any)).resolves.toEqual('success');
+        await expect(EmailService.sendEmail({})).resolves.toEqual('success');
       });
     });
 
@@ -23,7 +23,7 @@ describe('EmailService', () => {
       });
 
       test('raises error on sendEmail', async () => {
-        await expect(EmailService.sendEmail({} as any)).rejects.toEqual('AWS should not be called from test');
+        await expect(EmailService.sendEmail({})).rejects.toEqual('TestService.Email.sendEmail is missing');
       });
     })
   });

@@ -15,15 +15,25 @@ if (process.env.NODE_ENV === 'development') {
   transporter = nodemailer.createTransport({
     SES: new AWS.SES({ region: process.env.AWS_REGION }),
   });
+} else if (process.env.NODE_ENV === 'test') {
+  transporter = {
+    sendMail: sendTest,
+  } as any;
+} else {
+  throw 'UNSUPPORTED ENVIRONMENT for EmailService'
 }
 
 export class EmailService {
   static async sendEmail(emailParams: Mail.Options): Promise<any> {
-    if (process.env.NODE_ENV === 'test') {
-      return TestService?.Email?.sendEmail(emailParams) || Promise.reject('AWS should not be called from test');
-    }
-
-    return transporter.sendMail(emailParams as any)
+    return transporter.sendMail(emailParams)
       .catch(catchFn('Error sending email'));
   }
+}
+
+function sendTest(emailParams: Mail.Options) {
+  if (!TestService?.Email?.sendEmail) {
+    throw('TestService.Email.sendEmail is missing');
+  }
+
+  return TestService.Email.sendEmail(emailParams);
 }
