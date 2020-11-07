@@ -69,7 +69,7 @@ const login = ({ host, apiPrefix }: Config) => (params: LoginParams): Promise<an
   const url = `${host}${apiPrefix}/signin`;
   return post(url, params)
     .then(async ({ item, token }) => {
-      return saveToken(token).then(() => item);
+      return saveToken(token, item).then(() => item);
     });
 };
 
@@ -88,14 +88,44 @@ const profile = ({ host, apiPrefix }: Config) => (): Promise<any> => {
   return get(url, { auth: true });
 };
 
-const saveToken = (token: string): Promise<void> => {
+const saveToken = (token: string, user: any): Promise<void> => {
   localStorage.setItem('token', token);
-  return Promise.resolve();
+  localStorage.setItem('user', user);
+
+  const chromePromise = new Promise<void>((resolve) => {
+    if (!chrome) {
+      resolve();
+    }
+
+    chrome.storage.sync.set({
+      user,
+      token,
+    }, function() {
+      resolve();
+    });
+  });
+
+  return chromePromise;
 };
 
 const logout = (): Promise<void> => {
   localStorage.removeItem('token');
-  return Promise.resolve();
+  localStorage.removeItem('user');
+
+  const chromePromise = new Promise<void>((resolve) => {
+    if (!chrome) {
+      resolve();
+    }
+
+    chrome.storage.sync.set({
+      user: null,
+      token: null,
+    }, function() {
+      resolve();
+    });
+  });
+
+  return chromePromise;
 };
 
 interface IAuthSDK {
@@ -114,7 +144,7 @@ interface IAuthSDK {
 }
 
 const AuthSDK = (config = DEFAULT_CONFIG): IAuthSDK => {
-  config.apiPrefix = config.apiPrefix || `/api/v${config.version}/`;
+  config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}/`;
 
   return {
     signup: signup(config),

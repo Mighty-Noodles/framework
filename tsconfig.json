@@ -18,6 +18,9 @@
       "@utils/*": ["./src/utils/*"]
     }
   },
+  "types": [
+    "chrome"
+  ],
   "include": [
     "lib/**/*",
     "src/**/*",
