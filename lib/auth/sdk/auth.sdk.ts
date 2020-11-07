@@ -104,7 +104,7 @@ const profile = ({ host, apiPrefix }: Config) => (): Promise<any> => {
 
 const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
   return new Promise<any>((resolve) => {
-    if (!chrome) {
+    if (!chrome?.storage) {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       return resolve(user);
@@ -121,7 +121,7 @@ const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
 
 const getCredentials = (): Promise<Credentials> => {
   return new Promise((resolve) => {
-    if (!chrome) {
+    if (!chrome?.storage) {
       const token = localStorage.getItem('token');
       const user: User = JSON.parse(localStorage.getItem('user'));
       return resolve({ token, user });
@@ -137,7 +137,7 @@ const logout = (): Promise<void> => {
   localStorage.removeItem('user');
 
   const chromePromise = new Promise<void>((resolve) => {
-    if (!chrome) {
+    if (!chrome?.storage) {
       return resolve();
     }
 

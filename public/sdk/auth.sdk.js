@@ -41,7 +41,7 @@ const profile = ({ host, apiPrefix }) => () => {
 };
 const saveCredentials = ({ token, user }) => {
     return new Promise((resolve) => {
-        if (!chrome) {
+        if (!(chrome === null || chrome === void 0 ? void 0 : chrome.storage)) {
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
             return resolve(user);
@@ -56,7 +56,7 @@ const saveCredentials = ({ token, user }) => {
 };
 const getCredentials = () => {
     return new Promise((resolve) => {
-        if (!chrome) {
+        if (!(chrome === null || chrome === void 0 ? void 0 : chrome.storage)) {
             const token = localStorage.getItem('token');
             const user = JSON.parse(localStorage.getItem('user'));
             return resolve({ token, user });
@@ -69,7 +69,7 @@ const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     const chromePromise = new Promise((resolve) => {
-        if (!chrome) {
+        if (!(chrome === null || chrome === void 0 ? void 0 : chrome.storage)) {
             return resolve();
         }
         chrome.storage.sync.set({
