@@ -1,14 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Http_1 = require("../../libUtils/sdk/Http");
 const DEFAULT_CONFIG = {
@@ -31,9 +22,10 @@ const confirmEarlyAccessSignup = ({ host, apiPrefix }) => (params) => {
 const login = ({ host, apiPrefix }) => (params) => {
     const url = `${host}${apiPrefix}/signin`;
     return Http_1.post(url, params)
-        .then(({ item, token }) => __awaiter(void 0, void 0, void 0, function* () {
-        return saveToken(token, item).then(() => item);
-    }));
+        .then(saveCredentials);
+};
+const isLoggedIn = () => {
+    return getCredentials().then(({ token }) => !!token);
 };
 const forgotPassword = ({ host, apiPrefix }) => (params) => {
     const url = `${host}${apiPrefix}/password/forgot`;
@@ -47,28 +39,38 @@ const profile = ({ host, apiPrefix }) => () => {
     const url = `${host}${apiPrefix}/profile`;
     return Http_1.get(url, { auth: true });
 };
-const saveToken = (token, user) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', user);
-    const chromePromise = new Promise((resolve) => {
+const saveCredentials = ({ token, user }) => {
+    return new Promise((resolve) => {
         if (!chrome) {
-            resolve();
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            return resolve(user);
         }
         chrome.storage.sync.set({
             user,
             token,
         }, function () {
-            resolve();
+            resolve(user);
         });
     });
-    return chromePromise;
+};
+const getCredentials = () => {
+    return new Promise((resolve) => {
+        if (!chrome) {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            return resolve({ token, user });
+        }
+        chrome.storage.sync
+            .get(['token', 'user'], (credentials) => resolve(credentials));
+    });
 };
 const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     const chromePromise = new Promise((resolve) => {
         if (!chrome) {
-            resolve();
+            return resolve();
         }
         chrome.storage.sync.set({
             user: null,
@@ -86,7 +88,8 @@ const AuthSDK = (config = DEFAULT_CONFIG) => {
         earlyAccessSignup: earlyAccessSignup(config),
         confirmEarlyAccessSignup: confirmEarlyAccessSignup(config),
         login: login(config),
-        logout: logout,
+        logout,
+        isLoggedIn,
         forgotPassword: forgotPassword(config),
         resetPassword: resetPassword(config),
         profile: profile(config),
