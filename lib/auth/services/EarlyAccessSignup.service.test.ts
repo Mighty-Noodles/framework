@@ -205,10 +205,9 @@ describe('EarlyAccessSignupService', () => {
 
       test('does not send email', async () => {
         const sendEmail = jest.fn();
-        const sendEmail = jest.fn();
 
         testService({
-          Email: { sendEmail, sendEmail },
+          Email: { sendEmail },
         });
 
         await expect(EarlyAccessSignupService.confirmSignup({ user })).rejects.toEqual({
@@ -216,7 +215,6 @@ describe('EarlyAccessSignupService', () => {
           message: 'Password must contain at least 8 characters',
         });
 
-        expect(sendEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
       });
     });
@@ -236,15 +234,13 @@ describe('EarlyAccessSignupService', () => {
 
       test('does not send email', async () => {
         const sendEmail = jest.fn();
-        const sendEmail = jest.fn();
 
         testService({
-          Email: { sendEmail, sendEmail },
+          Email: { sendEmail },
         });
 
         await EarlyAccessSignupService.confirmSignup({ user, password, password_confirmation: password });
 
-        expect(sendEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
       });
     });

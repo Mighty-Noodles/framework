@@ -7,14 +7,13 @@ describe('EmailService', () => {
       beforeAll(() => {
         testService({
           Email: {
-            sendEmail: () => Promise.resolve('success plain'),
-            sendEmail: () => Promise.resolve('success raw'),
+            sendEmail: () => Promise.resolve('success'),
           },
         });
       });
 
       test('calls TestService sendEmail', async () => {
-        await expect(EmailService.sendEmail({} as any)).resolves.toEqual('success raw');
+        await expect(EmailService.sendEmail({} as any)).resolves.toEqual('success');
       });
     });
 

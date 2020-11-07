@@ -31,7 +31,7 @@ describe('SignupConfirmationRequired Email', () => {
             .replace('?', '\\?')),
         subject: EMAIL_CONFIG.signupConfirmationRequired.subject,
         to: 'user@email.com',
-        from: process.env.RESET_PASSWORD_EMAIL_SENDER,
+        from: process.env.SIGNUP_EMAIL_SENDER,
       }));
     });
   });

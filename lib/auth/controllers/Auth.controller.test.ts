@@ -73,9 +73,6 @@ describe('AuthController', () => {
       token = SignupConfirmationService.tokenGenerator(user);
     });
 
-    test.todo('when HTML');
-    test.todo('when JSON');
-
     test('sends email with confirmation link', async() => {
       const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({

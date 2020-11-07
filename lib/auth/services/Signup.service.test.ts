@@ -215,15 +215,13 @@ describe('SignupService', () => {
 
       test('does not send email', async () => {
         const sendEmail = jest.fn();
-        const sendEmail = jest.fn();
 
         testService({
-          Email: { sendEmail, sendEmail },
+          Email: { sendEmail },
         });
 
         await SignupService.confirmSignup(user);
 
-        expect(sendEmail).not.toHaveBeenCalled();
         expect(sendEmail).not.toHaveBeenCalled();
       });
     });
