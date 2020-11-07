@@ -21,9 +21,12 @@ describe('SignupCompleted Email', () => {
       });
 
       await sendSignupCompletedEmail({ user });
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.SIGNUP_EMAIL_SENDER}`));
+
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({
+        subject: EMAIL_CONFIG.signupCompleted.subject,
+        to: 'user@email.com',
+        from: process.env.RESET_PASSWORD_EMAIL_SENDER,
+      }));
     });
   });
   describe('on error', () => {

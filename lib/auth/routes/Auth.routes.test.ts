@@ -147,7 +147,7 @@ describe('/auth route', () => {
     });
   });
 
-  describe('PUT /signup/:id/confirm', () => {
+  describe('GET /signup/:id/confirm', () => {
     let user: User, token: string;
 
     beforeAll(async () => {
@@ -167,11 +167,9 @@ describe('/auth route', () => {
       expect.hasAssertions();
 
       request(server)
-        .put(`/auth/signup/${user.id}/confirm?token=${token}`)
-        .expect(200)
+        .get(`/auth/signup/${user.id}/confirm?token=${token}`)
+        .expect(302)
         .end(async (err, res) => {
-          expect(res.body).toEqual({ item: user.toJson() })
-
           const confirmedUser = await User.query().findById(user.id);
           expect(confirmedUser.confirmed).toBeTruthy();
 
@@ -200,8 +198,8 @@ describe('/auth route', () => {
       expect.hasAssertions();
 
       request(server)
-        .put(`/auth/password/${user.id}/reset?token=${token}`)
-        .send({ password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
+        .put(`/auth/password/${user.id}/reset`)
+        .send({ token, password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
         .expect(200)
         .end(async (err, res) => {
           expect(res.body).toEqual({ item: user.toJson() });
@@ -274,8 +272,8 @@ describe('/auth route', () => {
       expect.hasAssertions();
 
       request(server)
-        .put(`/auth/signup/early_access/${user.id}/confirm?token=${token}`)
-        .send({ password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
+        .put(`/auth/signup/early_access/${user.id}/confirm`)
+        .send({ token, password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
         .expect(200)
         .end(async (err, res) => {
           expect(res.body).toEqual({ item: user.toJson() })

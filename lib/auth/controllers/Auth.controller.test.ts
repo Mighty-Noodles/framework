@@ -73,31 +73,26 @@ describe('AuthController', () => {
       token = SignupConfirmationService.tokenGenerator(user);
     });
 
+    test.todo('when HTML');
+    test.todo('when JSON');
+
     test('sends email with confirmation link', async() => {
       const sendRawEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
         Email: { sendRawEmail },
       });
 
-      const status = jest.fn();
-      const json = jest.fn();
-      status.mockReturnValueOnce({ json });
+      const redirect = jest.fn();
 
       const req: any = {
         params: { id: user.id },
         query: { token },
       };
-      const res: any = { status };
+      const res: any = { redirect };
 
       await AuthController.confirmSignup(req, res);
 
-      const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
-      expect(joinedEmail).toMatch(EMAIL_CONFIG.signupCompleted.subject);
-
-      expect(status).toHaveBeenCalledWith(200);
-      expect(json).toHaveBeenCalledWith({
-        item: user.toJson(),
-      });
+      expect(redirect).toHaveBeenCalledWith(process.env.SIGNUP_CONFIRMED_REDIRECT_URL);
     });
 
     test('authenticates token', async () => {
@@ -142,7 +137,7 @@ describe('AuthController', () => {
 
       await AuthController.request_reset_password(req, res);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.passwordReset.subject}`));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.passwordReset.subject }));
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({
@@ -212,8 +207,7 @@ describe('AuthController', () => {
 
       const req: any = {
         params: { id: user.id },
-        query: { token },
-        body: { password, password_confirmation: password },
+        body: { token, password, password_confirmation: password },
       };
       const res: any = { status };
 
@@ -296,8 +290,7 @@ describe('AuthController', () => {
 
       await expectCountChangedBy(User, () => AuthController.earlyAccessSignup(req, res), 1);
 
-
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject}`));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
     });
   });
 
@@ -323,15 +316,13 @@ describe('AuthController', () => {
 
       const req: any = {
         params: { id: user.id },
-        query: { token },
-        body: { password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' }
+        body: { token, password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' }
       };
       const res: any = { status };
 
       await AuthController.earlyAccessConfirmSignup(req, res);
 
-      const joinedEmail = sendRawEmail.mock.calls[0].join('').replace(/[\r\n]/g, '');
-      expect(joinedEmail).toMatch(EMAIL_CONFIG.signupCompleted.subject);
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
 
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({
@@ -346,7 +337,7 @@ describe('AuthController', () => {
 
       const req: any = {
         params: { id: user.id },
-        query: { token: 'INVALID' },
+        body: { token: 'INVALID' },
       };
       const res: any = { status };
 

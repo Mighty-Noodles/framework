@@ -9,12 +9,13 @@ import { catchFn } from '@libUtils/logger';
 const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signupConfirmationRequired.html', 'utf-8');
 
 validateEmailConfig('signupConfirmationRequired', EMAIL_TEMPLATE, {
-  action_url: '{USER_ID}',
+  action_url: /(?=.*{USER_ID})(?=.*{DOMAIN})(?=.*{TOKEN})/,
   body: '{ACTION_URL}',
 });
 
 const {
   SIGNUP_EMAIL_SENDER,
+  EMAIL_DOMAIN,
  } = process.env;
 
 interface TokenizedEmailParams {
@@ -25,7 +26,10 @@ interface TokenizedEmailParams {
 export async function sendSignupConfirmationRequiredEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
   const { subject, action_url } = EMAIL_CONFIG['signupConfirmationRequired'];
 
-  const actionUrl = `${action_url}?token=${token}`;
+  const actionUrl = action_url
+    .replace(/{TOKEN}/g, token)
+    .replace(/{DOMAIN}/g, EMAIL_DOMAIN)
+    .replace(/{USER_ID}/g, String(user.id));
   const html = EMAIL_TEMPLATE
     .replace(/{ACTION_URL}/g, actionUrl);
 

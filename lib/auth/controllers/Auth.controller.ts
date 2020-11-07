@@ -24,10 +24,8 @@ export const AuthController = {
   confirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
     return SignupConfirmationService.verify(req.query.token as string, req.params.id)
       .then(user => SignupService.confirmSignup(user))
-      .then((user) => {
-        res.status(200).json({
-          item: user.toJson(),
-        });
+      .then(() => {
+        res.redirect(process.env.SIGNUP_CONFIRMED_REDIRECT_URL)
       })
       .catch(controllerCatchFn('Error on signup confirmation', res));
   },
@@ -43,7 +41,7 @@ export const AuthController = {
           }
 
           if (!user) {
-            return res.status(401).end();
+            return res.status(401).json({ code: 401, message: 'Email or password is invalid' });
           }
 
           if (!user.confirmed) {
@@ -80,7 +78,7 @@ export const AuthController = {
   },
 
   reset_password: async (req: Request, res: Response): Promise<void> => {
-    return PasswordService.verify(req.query.token as string, req.params.id)
+    return PasswordService.verify(req.body.token, req.params.id)
       .then(user => PasswordService.reset({
         user,
         password: req.body.password,
@@ -103,7 +101,7 @@ export const AuthController = {
   },
 
   earlyAccessConfirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
-    return SignupConfirmationService.verify(req.query.token as string, req.params.id)
+    return SignupConfirmationService.verify(req.body.token as string, req.params.id)
       .then(user => EarlyAccessSignupService.confirmSignup({
         user,
         password: req.body.password,

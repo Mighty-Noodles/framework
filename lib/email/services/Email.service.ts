@@ -1,20 +1,29 @@
-import { TestService } from '@libUtils/testUtils';
-import {
-  sendEmail as awsSendEmail,
-  sendRawEmail as awsSendRawEmail,
-  EmailParams
-} from '../aws/SES.aws';
+import AWS from 'aws-sdk';
 import Mail from 'nodemailer/lib/mailer';
-import { buildRawEmail } from './buildRawEmail';
+import nodemailer from 'nodemailer';
+import { TestService } from '@libUtils/testUtils';
+import { catchFn } from '@libUtils/logger';
+
+let transporter: Mail;
+
+if (process.env.NODE_ENV === 'development') {
+  transporter = nodemailer.createTransport({
+    host: '127.0.0.1',
+    port: 1025,
+  });
+} else if (process.env.NODE_ENV === 'production') {
+  transporter = nodemailer.createTransport({
+    SES: new AWS.SES({ region: process.env.AWS_REGION }),
+  });
+}
 
 export class EmailService {
-  static sendEmail(email: EmailParams): ReturnType<typeof awsSendEmail> {
-    return TestService?.Email?.sendEmail(email) || awsSendEmail(email);
-  }
+  static async sendRawEmail(emailParams: Mail.Options): Promise<any> {
+    if (process.env.NODE_ENV === 'test') {
+      return TestService?.Email?.sendRawEmail(emailParams) || Promise.reject('AWS should not be called from test');
+    }
 
-  static async sendRawEmail(emailParams: Mail.Options): Promise<ReturnType<typeof awsSendRawEmail>> {
-    const email = await buildRawEmail(emailParams);
-
-    return TestService?.Email?.sendRawEmail(email) || awsSendRawEmail(email);
+    return transporter.sendMail(emailParams as any)
+      .catch(catchFn('Error sending email'));
   }
 }

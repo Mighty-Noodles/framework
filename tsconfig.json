@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "target": "ES6",
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
       "@auth/*": ["./lib/auth/*"],
@@ -19,6 +21,6 @@
   "include": [
     "lib/**/*",
     "src/**/*",
-    "scripts/**/*",
+    "scripts/**/*"
   ]
 }

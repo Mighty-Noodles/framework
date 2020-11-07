@@ -1,6 +1,6 @@
 {
   "watch": ["src", "lib", "templates"],
-  "ext": "ts,html",
+  "ext": "ts,html,json",
   "ignore": ["*.test.ts"],
   "exec": "ts-node --transpile-only -r tsconfig-paths/register src/index.ts"
 }

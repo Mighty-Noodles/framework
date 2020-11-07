@@ -23,10 +23,6 @@ describe('EmailService', () => {
         testService({});
       });
 
-      test('raises error on sendEmail', async () => {
-        await expect(EmailService.sendEmail({} as any)).rejects.toEqual('AWS should not be called from test');
-      });
-
       test('raises error on sendRawEmail', async () => {
         await expect(EmailService.sendRawEmail({} as any)).rejects.toEqual('AWS should not be called from test');
       });

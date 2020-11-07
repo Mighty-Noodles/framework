@@ -16,11 +16,16 @@ export class User extends Model {
 
   confirmed: boolean;
   created_at: Date;
+
   hash: string;
 
   static tableName = 'users';
 
   toJson(): UserJson {
     return _.pick(this, 'id', 'email', 'first_name', 'last_name');
+  }
+
+  get full_name(): string {
+    return this.last_name ? `${this.first_name} ${this.last_name}` : this.first_name;
   }
 }

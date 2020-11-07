@@ -10,10 +10,11 @@ const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/passwordReset.html', 
 
 const {
   RESET_PASSWORD_EMAIL_SENDER,
+  EMAIL_DOMAIN,
 } = process.env;
 
 validateEmailConfig('passwordReset', EMAIL_TEMPLATE, {
-  action_url: 'http.*{USER_ID}',
+  action_url: /(?=.*{USER_ID})(?=.*{DOMAIN})(?=.*{TOKEN})/,
   body: '{ACTION_URL}',
 });
 
@@ -25,7 +26,12 @@ interface TokenizedEmailParams {
 export async function sendPasswordResetEmail({ user, token }: TokenizedEmailParams): Promise<ReturnType<typeof EmailService.sendRawEmail>> {
   const { subject, action_url } = EMAIL_CONFIG['passwordReset'];
 
-  const actionUrl = `${action_url}?token=${token}`;
+
+  const actionUrl = action_url
+    .replace(/{TOKEN}/g, token)
+    .replace(/{DOMAIN}/g, EMAIL_DOMAIN)
+    .replace(/{USER_ID}/g, String(user.id));
+
   const html = EMAIL_TEMPLATE
     .replace(/{ACTION_URL}/g, actionUrl);
 

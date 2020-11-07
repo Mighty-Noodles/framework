@@ -198,7 +198,7 @@ describe('SignupService', () => {
 
       await SignupService.confirmSignup(user);
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
     });
 
     describe('when user is already confirmed', () => {

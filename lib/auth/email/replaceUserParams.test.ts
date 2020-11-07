@@ -1,19 +1,32 @@
 import { User } from "@auth/models/User";
+import { resetDatabase } from "@libUtils/testUtils";
 import { replaceUserParams } from "./replaceUserParams";
 
 describe('replaceUserParams', () => {
-  const user: User = {
-    id: 123,
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'john@email.com',
-  } as User;
+  let user: User;
+
+  beforeAll(async () => {
+    resetDatabase();
+    user = await User.query().insert({
+      id: 123,
+      first_name: 'John',
+      last_name: 'Doe',
+      email: 'john@email.com',
+    });
+  });
 
   test('replaces USER_ID', () => {
     const body = 'Your id is {USER_ID}! Hello {USER_ID}';
 
     const result = replaceUserParams(body, user);
     expect(result).toEqual('Your id is 123! Hello 123');
+  });
+
+  test('replaces USER_FULL_NAME', () => {
+    const body = 'Your name is {USER_FULL_NAME}! Hello {USER_FULL_NAME}';
+
+    const result = replaceUserParams(body, user);
+    expect(result).toEqual('Your name is John Doe! Hello John Doe');
   });
 
   test('replaces USER_FIRST_NAME', () => {

@@ -23,11 +23,16 @@ describe('SignupConfirmationRequired Email', () => {
 
       await sendSignupConfirmationRequiredEmail({ user, token });
 
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('MY_TOKEN'));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(EMAIL_CONFIG.signupConfirmationRequired.action_url.replace(/{USER_ID}/g, String(user.id))));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupConfirmationRequired.subject}`));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching('To: user@email.com'));
-      expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`From: ${process.env.RESET_PASSWORD_EMAIL_SENDER}`));
+      expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({
+        html: expect.stringMatching(EMAIL_CONFIG.signupConfirmationRequired.action_url
+            .replace(/{USER_ID}/g, String(user.id))
+            .replace(/{DOMAIN}/g, process.env.EMAIL_DOMAIN)
+            .replace(/{TOKEN}/g, 'MY_TOKEN')
+            .replace('?', '\\?')),
+        subject: EMAIL_CONFIG.signupConfirmationRequired.subject,
+        to: 'user@email.com',
+        from: process.env.RESET_PASSWORD_EMAIL_SENDER,
+      }));
     });
   });
   describe('on error', () => {

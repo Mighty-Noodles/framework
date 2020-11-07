@@ -79,7 +79,7 @@ describe('PasswordService', () => {
 
         await PasswordService.sendPasswordResetEmail({ email: 'user@email.com' });
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.passwordReset.subject}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.passwordReset.subject }));
       });
     });
 

@@ -12,7 +12,7 @@ interface EmailConfig {
 
 const ERROR_PREFIX = '[EMAIL CONFIG]';
 
-export function validateEmailConfig(key: string, body: string, mandatoryProps: Record<string, string> = {}, configuration: EmailConfig = EMAIL_CONFIG): void {
+export function validateEmailConfig(key: string, body: string, mandatoryProps: Record<string, string | RegExp> = {}, configuration: EmailConfig = EMAIL_CONFIG): void {
   const config = configuration[key];
 
   if (!config) {

@@ -3,5 +3,7 @@ node_modules
 .env
 notes.md
 yarn-error.log
-server-build
+build
 coverage
+public/sdk/*.js
+build-server

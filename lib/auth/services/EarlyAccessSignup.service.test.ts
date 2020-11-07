@@ -36,9 +36,8 @@ describe('EarlyAccessSignupService', () => {
           Email: { sendRawEmail },
         });
 
-        const user = await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 1);
-
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.action_url.replace(/{USER_ID}/g, user.id)));
+        await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 1);
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
       });
 
       test('returns error when email delivery fails', async () => {
@@ -112,7 +111,7 @@ describe('EarlyAccessSignupService', () => {
 
             await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 0);
 
-            expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject}`));
+            expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
           });
 
           test('returns error when email delivery fails', async () => {
@@ -172,7 +171,7 @@ describe('EarlyAccessSignupService', () => {
 
         await EarlyAccessSignupService.confirmSignup({ user, password, password_confirmation: password });
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
       });
     });
 

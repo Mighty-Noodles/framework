@@ -22,9 +22,9 @@ describe('/auth route definitions', () => {
       .end(done);
   });
 
-  test('PUT /signup/:id/confirm', (done) => {
+  test('get /signup/:id/confirm', (done) => {
     request(server)
-      .put(`/api/v1/signup/${user.id}/confirm`)
+      .get(`/api/v1/signup/${user.id}/confirm`)
       .expect(401)
       .end(done);
   });
@@ -61,6 +61,48 @@ describe('/auth route definitions', () => {
     request(server)
       .put(`/api/v1/password/${user.id}/reset`)
       .expect(401)
+      .end(done);
+  });
+
+  test('GET /login', (done) => {
+    request(server)
+      .get(`/login`)
+      .expect(200)
+      .end(done);
+  });
+
+  test('GET /password/forgot', (done) => {
+    request(server)
+      .get(`/password/forgot`)
+      .expect(200)
+      .end(done);
+  });
+
+  test('GET /password/:id/reset', (done) => {
+    request(server)
+      .get(`/password/${user.id}/reset`)
+      .expect(200)
+      .end(done);
+  });
+
+  test('GET /signup/early_access', (done) => {
+    request(server)
+      .get(`/signup/early_access`)
+      .expect(200)
+      .end(done);
+  });
+
+  test('GET /signup/early_access/${user.id}/confirm', (done) => {
+    request(server)
+      .get(`/signup/early_access/${user.id}/confirm`)
+      .expect(200)
+      .end(done);
+  });
+
+  test('GET /signup', (done) => {
+    request(server)
+      .get(`/signup`)
+      .expect(200)
       .end(done);
   });
 });

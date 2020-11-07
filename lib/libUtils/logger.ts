@@ -2,6 +2,7 @@
 
 import debug from 'debug';
 import { Response } from 'express';
+import _ from 'lodash';
 
 const appLog = debug('app');
 const errorLogDebug = debug('app:error');
@@ -23,13 +24,16 @@ function errorLog(...params): void {
   if (process.env.NODE_ENV === 'test') {
     return;
   }
+
   const log = [...errorDisplay, ...params];
   // @ts-ignore
   errorLogDebug(...log);
 }
 
 const controllerCatchFn = (defaultMessage = 'Some error occurred', res: Response) => (error: any): void => {
-  errorLog(defaultMessage, error);
+  if (error?.code >= 500) {
+    errorLog(defaultMessage, error);
+  }
 
   const code = error?.code || 500;
   const message = code >= 500 ? defaultMessage : error?.message;
@@ -38,9 +42,11 @@ const controllerCatchFn = (defaultMessage = 'Some error occurred', res: Response
 };
 
 const catchFn = (defaultMessage = 'Some error occurred') => (error: any): Promise<any> => {
-  errorLog(defaultMessage, error);
+  if (error?.code >= 500) {
+    errorLog(defaultMessage, error);
+  }
 
-  const code = error?.code || 500;
+  const code = (_.isNumber(error?.code) && error?.code) || 500;
   const message = error?.message || defaultMessage;
 
   return Promise.reject({ code, message });

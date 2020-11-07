@@ -24,7 +24,7 @@ describe('SignupConfirmationService', () => {
 
         await SignupConfirmationService.sendSignupConfirmationEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupConfirmationRequired.subject}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupConfirmationRequired.subject }));
       });
     });
 
@@ -70,7 +70,7 @@ describe('SignupConfirmationService', () => {
 
         await SignupConfirmationService.sendSubscriptionCompletedEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(`Subject: ${EMAIL_CONFIG.signupCompleted.subject}`));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.signupCompleted.subject }));
       });
     });
 
@@ -116,7 +116,7 @@ describe('SignupConfirmationService', () => {
 
         await SignupConfirmationService.sendEarlyAccessSignupConfirmationEmail(user);
 
-        expect(sendRawEmail).toHaveBeenCalledWith(expect.stringMatching(EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.action_url.replace(/{USER_ID}/g, String(user.id))));
+        expect(sendRawEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.earlyAccessSignupConfirmationRequired.subject }));
       });
     });
 
