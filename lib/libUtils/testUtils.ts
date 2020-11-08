@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { knex, Model } from '@db/Model';
 
 let TestService: any = {};

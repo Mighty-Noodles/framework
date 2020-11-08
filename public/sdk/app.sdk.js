@@ -1,12 +1,9 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Http_1 = require("../../libUtils/sdk/Http");
-const DEFAULT_CONFIG = {
-    host: '',
-    version: 1,
-    mode: 'cors',
-};
+exports.AuthSDK = exports.getToken = void 0;
+const Http_1 = require("./utils/Http");
+const SdkFactory_1 = require("./utils/SdkFactory");
 const signup = ({ host, apiPrefix }) => (params) => {
     const url = `${host}${apiPrefix}/signup`;
     return Http_1.post(url, params);
@@ -27,6 +24,10 @@ const login = ({ host, apiPrefix }) => (params) => {
 const isLoggedIn = () => {
     return getCredentials().then(({ token }) => !!token);
 };
+const getToken = () => {
+    return getCredentials().then(({ token }) => token);
+};
+exports.getToken = getToken;
 const forgotPassword = ({ host, apiPrefix }) => (params) => {
     const url = `${host}${apiPrefix}/password/forgot`;
     return Http_1.post(url, params);
@@ -37,7 +38,7 @@ const resetPassword = ({ host, apiPrefix }) => (params) => {
 };
 const profile = ({ host, apiPrefix }) => () => {
     const url = `${host}${apiPrefix}/profile`;
-    return Http_1.get(url, { auth: true });
+    return Http_1.get(url, { token: getToken() });
 };
 const saveCredentials = ({ token, user }) => {
     return new Promise((resolve) => {
@@ -57,8 +58,9 @@ const saveCredentials = ({ token, user }) => {
 const getCredentials = () => {
     return new Promise((resolve) => {
         if (!(chrome === null || chrome === void 0 ? void 0 : chrome.storage)) {
+            const userParams = localStorage.getItem('user');
+            const user = userParams !== 'undefined' ? JSON.parse(userParams) : undefined;
             const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user'));
             return resolve({ token, user });
         }
         chrome.storage.sync
@@ -81,8 +83,7 @@ const logout = () => {
     });
     return chromePromise;
 };
-const AuthSDK = (config = DEFAULT_CONFIG) => {
-    config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}/`;
+const AuthSDK = SdkFactory_1.SdkFactory((config) => {
     return {
         signup: signup(config),
         earlyAccessSignup: earlyAccessSignup(config),
@@ -94,14 +95,32 @@ const AuthSDK = (config = DEFAULT_CONFIG) => {
         resetPassword: resetPassword(config),
         profile: profile(config),
     };
-};
+});
+exports.AuthSDK = AuthSDK;
 if (window) {
     window.AuthSDK = AuthSDK;
 }
-exports.default = AuthSDK;
 
-},{"../../libUtils/sdk/Http":2}],2:[function(require,module,exports){
+},{"./utils/Http":3,"./utils/SdkFactory":4}],2:[function(require,module,exports){
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./utils/SdkFactory"), exports);
+__exportStar(require("./utils/Http"), exports);
+__exportStar(require("./auth.sdk"), exports);
+
+},{"./auth.sdk":1,"./utils/Http":3,"./utils/SdkFactory":4}],3:[function(require,module,exports){
+"use strict";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -113,14 +132,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.put = exports.post = exports.del = exports.get = void 0;
-function defaultHeaders(opts) {
-    const token = opts.auth ? localStorage.getItem('token') : null;
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    if (token) {
-        headers.append('Authorization', `JWT ${token}`);
-    }
-    return headers;
+function buildHeader({ token }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        if (token) {
+            headers.append('Authorization', `JWT ${yield token}`);
+        }
+        return headers;
+    });
 }
 const formatResponse = (res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = yield res
@@ -135,21 +155,21 @@ const formatResponse = (res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.get = (url, opts = {}) => __awaiter(void 0, void 0, void 0, function* () {
     return fetch(url, {
         method: 'GET',
-        headers: defaultHeaders(opts),
+        headers: yield buildHeader(opts),
     })
         .then(formatResponse);
 });
 exports.del = (url, opts = {}) => __awaiter(void 0, void 0, void 0, function* () {
     return fetch(url, {
         method: 'DELETE',
-        headers: defaultHeaders(opts),
+        headers: yield buildHeader(opts),
     })
         .then(formatResponse);
 });
 exports.post = (url, body = {}, opts = {}) => __awaiter(void 0, void 0, void 0, function* () {
     return fetch(url, {
         method: 'POST',
-        headers: defaultHeaders(opts),
+        headers: yield buildHeader(opts),
         body: JSON.stringify(body),
     })
         .then(formatResponse);
@@ -157,10 +177,37 @@ exports.post = (url, body = {}, opts = {}) => __awaiter(void 0, void 0, void 0, 
 exports.put = (url, body = {}, opts = {}) => __awaiter(void 0, void 0, void 0, function* () {
     return fetch(url, {
         method: 'PUT',
-        headers: defaultHeaders(opts),
+        headers: yield buildHeader(opts),
         body: JSON.stringify(body),
     })
         .then(formatResponse);
 });
 
-},{}]},{},[1]);
+},{}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SdkFactory = void 0;
+const DEFAULT_CONFIG = {
+    host: '',
+    version: 1,
+    mode: 'cors',
+};
+exports.SdkFactory = (Sdk) => (config = DEFAULT_CONFIG) => {
+    config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}/`;
+    return Sdk(config);
+};
+
+},{}],5:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AppSDK = void 0;
+const sdk_1 = require("../../lib/sdk/");
+const AppSDK = sdk_1.SdkFactory((config) => {
+    return {};
+});
+exports.AppSDK = AppSDK;
+if (window) {
+    window.AppSDK = sdk_1.SdkFactory(AppSDK);
+}
+
+},{"../../lib/sdk/":2}]},{},[1,5]);

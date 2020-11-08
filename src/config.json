@@ -1,0 +1,3 @@
+{
+  "sdkPaths": ["./src/sdk/app.sdk.ts"]
+}

@@ -1,11 +1,5 @@
-import { get, post, put } from '../../libUtils/sdk/Http';
-
-interface Config {
-  host?: string;
-  version?: number;
-  apiPrefix?: string;
-  mode?: 'no-cors' | 'cors' | 'same-origin',
-}
+import { get, post, put } from './utils/Http';
+import { SdkFactory, Config } from './utils/SdkFactory';
 
 interface User {
   id: string;
@@ -18,12 +12,6 @@ interface Credentials {
   token: string;
   user: User;
 }
-
-const DEFAULT_CONFIG: Config = {
-  host: '',
-  version: 1,
-  mode: 'cors',
-};
 
 interface SignupParams {
   email: string;
@@ -79,12 +67,16 @@ const confirmEarlyAccessSignup = ({ host, apiPrefix }: Config) => (params: Early
 
 const login = ({ host, apiPrefix }: Config) => (params: LoginParams): Promise<User> => {
   const url = `${host}${apiPrefix}/signin`;
-  return post(url, params)
+  return post<Credentials>(url, params)
     .then(saveCredentials);
 };
 
 const isLoggedIn = (): Promise<boolean> => {
   return getCredentials().then(({ token }) => !!token);
+};
+
+const getToken = (): Promise<string> => {
+  return getCredentials().then(({ token }) => token);
 }
 
 const forgotPassword = ({ host, apiPrefix }: Config) => (params: ForgotPaswordParams): Promise<any> => {
@@ -99,7 +91,7 @@ const resetPassword = ({ host, apiPrefix }: Config) => (params: ResetPasswordPar
 
 const profile = ({ host, apiPrefix }: Config) => (): Promise<any> => {
   const url = `${host}${apiPrefix}/profile`;
-  return get(url, { auth: true });
+  return get(url, { token: getToken() });
 };
 
 const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
@@ -122,8 +114,10 @@ const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
 const getCredentials = (): Promise<Credentials> => {
   return new Promise((resolve) => {
     if (!chrome?.storage) {
+      const userParams = localStorage.getItem('user');
+      const user: User = userParams !== 'undefined' ? JSON.parse(userParams) : undefined;
       const token = localStorage.getItem('token');
-      const user: User = JSON.parse(localStorage.getItem('user'));
+
       return resolve({ token, user });
     }
 
@@ -152,25 +146,11 @@ const logout = (): Promise<void> => {
   return chromePromise;
 };
 
-interface IAuthSDK {
-  signup: (params: SignupParams) => Promise<any>,
-
-  earlyAccessSignup: (params: EarlyAccessSignupParams) => Promise<any>,
-  confirmEarlyAccessSignup: (params: EarlyAccessSignupConfirmParams) => Promise<any>,
-
-  login: (params: LoginParams) => Promise<any>,
-  logout: () => Promise<any>,
-  isLoggedIn: () => Promise<boolean>
-
-  forgotPassword: (params: ForgotPaswordParams) => Promise<any>,
-  resetPassword: (params: ResetPasswordParams) => Promise<any>,
-
-  profile: () => Promise<any>,
+export {
+  getToken,
 }
 
-const AuthSDK = (config = DEFAULT_CONFIG): IAuthSDK => {
-  config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}/`;
-
+const AuthSDK = SdkFactory((config: Config) => {
   return {
     signup: signup(config),
 
@@ -186,10 +166,10 @@ const AuthSDK = (config = DEFAULT_CONFIG): IAuthSDK => {
 
     profile: profile(config),
   };
-};
+});
 
 if (window) {
   (window as any).AuthSDK = AuthSDK;
 }
 
-export default AuthSDK;
+export { AuthSDK };
