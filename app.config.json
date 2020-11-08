@@ -7,5 +7,10 @@
       "./public/sdk"
     ],
     "outFile": "app.sdk.js"
+  },
+  "auth": {
+    "signup": {
+      "signupConfirmationRedirectUrl": "/login"
+    }
   }
 }

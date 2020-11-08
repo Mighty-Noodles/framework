@@ -5,6 +5,7 @@ import { SignupConfirmationService } from '@auth/services/SignupConfirmation.ser
 import { PasswordService } from '@auth/services/Password.service';
 
 import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import AppConfig from 'app.config.json';
 
 describe('AuthController', () => {
   beforeEach(async () => {
@@ -65,12 +66,67 @@ describe('AuthController', () => {
 
 
   describe('confirmSignup', () => {
-    let token: string, user: User;
+    let token: string, user: User, req, res, status, json;
 
     beforeEach(async () => {
       await resetDatabase();
       user =await User.query().insertAndFetch({ email: 'a@a.com', first_name: 'a', last_name: 'b', hash: '123', confirmed: false });
       token = SignupConfirmationService.tokenGenerator(user);
+
+      json = jest.fn();
+      status = jest.fn().mockReturnValueOnce({ json });
+
+      req = {
+        accepts: () => 'json',
+        params: { id: user.id },
+        query: { token },
+      };
+
+      res = { status };
+    });
+
+    describe('format', () => {
+      test('html', async () => {
+        const redirect = jest.fn();
+        const res: any = { redirect };
+
+        req.accepts = () => 'html';
+
+        await AuthController.confirmSignup(req, res);
+
+        expect(redirect).toHaveBeenCalledWith(AppConfig.auth.signup.signupConfirmationRedirectUrl);
+      });
+
+      test('json', async () => {
+        req.accepts = () => 'json';
+
+        await AuthController.confirmSignup(req, res);
+
+        expect(json).toHaveBeenCalledWith({ item: user.toJson() });
+      });
+    });
+
+    test('accepts token in query or body', async() => {
+      status = jest.fn().mockReturnValue({ json });
+      req = {
+        accepts: () => 'json',
+        params: { id: user.id },
+        query: { token },
+      };
+      res.status = status;
+
+      await AuthController.confirmSignup(req, res);
+
+      req = {
+        accepts: () => 'json',
+        params: { id: user.id },
+        body: { token },
+      };
+
+      await AuthController.confirmSignup(req, res);
+
+      expect(status).toHaveBeenNthCalledWith(1, 200);
+      expect(status).toHaveBeenNthCalledWith(2, 200);
     });
 
     test('sends email with confirmation link', async() => {
@@ -79,17 +135,9 @@ describe('AuthController', () => {
         Email: { sendEmail },
       });
 
-      const redirect = jest.fn();
-
-      const req: any = {
-        params: { id: user.id },
-        query: { token },
-      };
-      const res: any = { redirect };
-
       await AuthController.confirmSignup(req, res);
 
-      expect(redirect).toHaveBeenCalledWith(process.env.SIGNUP_CONFIRMED_REDIRECT_URL);
+      expect(sendEmail).toHaveBeenCalled();
     });
 
     test('authenticates token', async () => {

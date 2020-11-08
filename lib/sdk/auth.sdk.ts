@@ -14,6 +14,11 @@ interface Credentials {
   user: User;
 }
 
+interface SignupConfirmationParams {
+  id: string | number;
+  token: string;
+}
+
 interface SignupParams {
   email: string;
   first_name: string;
@@ -57,6 +62,13 @@ const signup = ({ host, apiPrefix }: Config) => async (params: SignupParams): Pr
   const url = `${host}${apiPrefix}/signup`;
   return post(url, params);
 }
+
+const confirmSignup = ({ host, apiPrefix }: Config) => async (params: SignupConfirmationParams): Promise<any> => {
+  await validate(params, ['id', 'token']);
+
+  const url = `${host}${apiPrefix}/signup/${params.id}/confirm`;
+  return put(url, params);
+};
 
 const earlyAccessSignup = ({ host, apiPrefix }: Config) => async (params: EarlyAccessSignupParams): Promise<any> => {
   await validate(params, ['email', 'first_name']);
@@ -166,6 +178,7 @@ export {
 const AuthSDK = SdkFactory((config: Config) => {
   return {
     signup: signup(config),
+    confirmSignup: confirmSignup(config),
 
     earlyAccessSignup: earlyAccessSignup(config),
     confirmEarlyAccessSignup: confirmEarlyAccessSignup(config),

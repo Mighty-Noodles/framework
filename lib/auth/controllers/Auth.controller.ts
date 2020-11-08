@@ -10,6 +10,8 @@ import { SignupConfirmationService } from '@auth/services/SignupConfirmation.ser
 import { EarlyAccessSignupService } from '@auth/services/EarlyAccessSignup.service';
 import { controllerCatchFn } from '@libUtils/logger';
 
+import AppConfig from 'app.config.json';
+
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<void> => {
     return SignupService.signup(req.body)
@@ -22,10 +24,18 @@ export const AuthController = {
   },
 
   confirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
-    return SignupConfirmationService.verify(req.query.token as string, req.params.id)
+    const token = req.query?.token as string || req.body?.token;
+
+    return SignupConfirmationService.verify(token || req.body.token, req.params.id)
       .then(user => SignupService.confirmSignup(user))
-      .then(() => {
-        res.redirect(process.env.SIGNUP_CONFIRMED_REDIRECT_URL)
+      .then((user) => {
+        if (req.accepts(['json', 'html']) === 'html') {
+          res.redirect(AppConfig.auth.signup.signupConfirmationRedirectUrl)
+        } else {
+          res.status(200).json({
+            item: user.toJson(),
+          });
+        }
       })
       .catch(controllerCatchFn('Error on signup confirmation', res));
   },

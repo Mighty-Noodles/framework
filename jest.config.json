@@ -1,5 +1,7 @@
 {
   "moduleNameMapper": {
+    "^app.config.json$": ["<rootDir>/app.config.json"],
+
     "^src/(.*)$": ["<rootDir>/src/$1"],
     "^templates/(.*)$": ["<rootDir>/templates/$1"],
 

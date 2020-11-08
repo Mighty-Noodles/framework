@@ -2,7 +2,7 @@ import browserify from 'browserify';
 import tsify from 'tsify';
 import fs from 'fs';
 
-import Config from '../../config.json';
+import Config from '../../app.config.json';
 
 const DEFAULT_FOLDER = '.';
 const FILENAME = Config.sdk.outFile || 'app.sdk.js';

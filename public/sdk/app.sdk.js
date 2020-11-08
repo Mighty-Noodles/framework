@@ -19,6 +19,11 @@ const signup = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, vo
     const url = `${host}${apiPrefix}/signup`;
     return Http_1.post(url, params);
 });
+const confirmSignup = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['id', 'token']);
+    const url = `${host}${apiPrefix}/signup/${params.id}/confirm`;
+    return Http_1.put(url, params);
+});
 const earlyAccessSignup = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
     yield Validation_1.validate(params, ['email', 'first_name']);
     const url = `${host}${apiPrefix}/signup/early_access`;
@@ -102,6 +107,7 @@ const logout = () => {
 const AuthSDK = SdkFactory_1.SdkFactory((config) => {
     return {
         signup: signup(config),
+        confirmSignup: confirmSignup(config),
         earlyAccessSignup: earlyAccessSignup(config),
         confirmEarlyAccessSignup: confirmEarlyAccessSignup(config),
         login: login(config),

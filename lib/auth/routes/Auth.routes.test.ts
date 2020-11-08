@@ -10,6 +10,8 @@ import { User } from '@auth/models/User';
 import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
 import { PasswordService } from '@auth/services/Password.service';
 
+import AppConfig from 'app.config.json';
+
 describe('/auth route', () => {
   describe('POST /signup', () => {
     beforeEach(async () => {
@@ -158,7 +160,7 @@ describe('/auth route', () => {
       token = SignupConfirmationService.tokenGenerator(user);
     });
 
-    test('responds with a message', async (done) => {
+    test('redirects', async (done) => {
       const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
       testService({
         Email: { sendEmail },
@@ -168,10 +170,49 @@ describe('/auth route', () => {
 
       request(server)
         .get(`/auth/signup/${user.id}/confirm?token=${token}`)
+        .set('Accept', 'text/html')
+        .expect('Content-Type', /html/)
+        .expect('location', AppConfig.auth.signup.signupConfirmationRedirectUrl)
         .expect(302)
+        .end(async (err) => {
+          const confirmedUser = await User.query().findById(user.id);
+          expect(confirmedUser.confirmed).toBeTruthy();
+
+          done(err);
+        });
+    });
+  });
+
+  describe('PUT /signup/:id/confirm', () => {
+    let user: User, token: string;
+
+    beforeAll(async () => {
+      await resetDatabase();
+      user = await User.query().insertAndFetch(
+        { email: 'a@a.com', first_name: 'a', last_name: 'b', hash: PASSWORD_HASH, confirmed: false }
+      );
+      token = SignupConfirmationService.tokenGenerator(user);
+    });
+
+    test('responds with a message', async (done) => {
+      const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+      testService({
+        Email: { sendEmail },
+      });
+
+      expect.hasAssertions();
+
+      request(server)
+        .put(`/auth/signup/${user.id}/confirm?token=${token}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
         .end(async (err, res) => {
           const confirmedUser = await User.query().findById(user.id);
           expect(confirmedUser.confirmed).toBeTruthy();
+
+          expect(res.body).toEqual({
+            item: user.toJson(),
+          });
 
           done(err);
         });
