@@ -40,7 +40,7 @@ export const AuthController = {
       .catch(controllerCatchFn('Error on signup confirmation', res));
   },
 
-  signin: (req: Request, res: Response, next: NextFunction): void => {
+  login: (req: Request, res: Response, next: NextFunction): void => {
     passport.authenticate(
       'login',
       async (err, user: User) => {

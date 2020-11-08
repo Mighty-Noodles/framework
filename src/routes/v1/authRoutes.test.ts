@@ -29,6 +29,13 @@ describe('/auth route definitions', () => {
       .end(done);
   });
 
+  test('put /signup/:id/confirm', (done) => {
+    request(server)
+      .put(`/api/v1/signup/${user.id}/confirm`)
+      .expect(401)
+      .end(done);
+  });
+
   test('POST /signup/early_access', (done) => {
     request(server)
       .post(`/api/v1/signup/early_access`)
@@ -43,9 +50,9 @@ describe('/auth route definitions', () => {
       .end(done);
   });
 
-  test('POST /signin', (done) => {
+  test('POST /login', (done) => {
     request(server)
-      .post('/api/v1/signin')
+      .post('/api/v1/login')
       .expect(401)
       .end(done);
   });

@@ -53,7 +53,7 @@ describe('/auth route', () => {
     });
   });
 
-  describe('POST /signin', () => {
+  describe('POST /login', () => {
     let user: User;
 
     beforeAll(async () => {
@@ -67,7 +67,7 @@ describe('/auth route', () => {
       expect.hasAssertions();
 
       request(server)
-        .post('/auth/signin')
+        .post('/auth/login')
         .send({ email: 'a@a.com', password: '123456' })
         .expect(200)
         .end((err, res) => {
@@ -93,7 +93,7 @@ describe('/auth route', () => {
 
     test('returns 401 if email does not exist', (done) => {
       request(server)
-        .post('/auth/signin')
+        .post('/auth/login')
         .send({ email: 'WRONG@email.com', password: '123456' })
         .expect(401)
         .end(done);
@@ -101,7 +101,7 @@ describe('/auth route', () => {
 
     test('returns 401 if password is wrong', (done) => {
       request(server)
-        .post('/auth/signin')
+        .post('/auth/login')
         .send({ email: 'a@a.com', password: 'WRONG' })
         .expect(401)
         .end(done);
@@ -111,7 +111,7 @@ describe('/auth route', () => {
       await user.$query().update({ confirmed: false });
 
       request(server)
-        .post('/auth/signin')
+        .post('/auth/login')
         .send({ email: 'a@a.com', password: '123456' })
         .expect(403)
         .end((err, res) => {

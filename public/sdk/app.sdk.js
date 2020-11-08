@@ -36,7 +36,7 @@ const confirmEarlyAccessSignup = ({ host, apiPrefix }) => (params) => __awaiter(
 });
 const login = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
     yield Validation_1.validate(params, ['email', 'password']);
-    const url = `${host}${apiPrefix}/signin`;
+    const url = `${host}${apiPrefix}/login`;
     return Http_1.post(url, params)
         .then(saveCredentials);
 });
