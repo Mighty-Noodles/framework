@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const validate = (params: { [key: string]: any }, mandatoryParams: string[]): boolean => {
+export const validate = async (params: { [key: string]: any }, mandatoryParams: string[]): Promise<true> => {
   const paramKeys = Object.keys(params);
 
   mandatoryParams.forEach(prop => {
     if (!paramKeys.includes(prop)) {
-      throw(new Error(`${prop} is missing`));
+      return Promise.reject(new Error(`${prop} is missing`));
     }
     if (params[prop] === '') {
-      throw(new Error(`${prop} should not be empty`));
+      return Promise.reject(new Error(`${prop} should not be empty`));
     }
   });
 

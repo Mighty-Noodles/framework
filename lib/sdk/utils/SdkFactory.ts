@@ -12,10 +12,10 @@ const DEFAULT_CONFIG: Config = {
 };
 
 interface ISDK {
-  [call: string]: any;
+  [key: string]: (params: any) => Promise<any>;
 }
 
-export const SdkFactory = (Sdk: any) => (config = DEFAULT_CONFIG): ISDK => {
+export const SdkFactory = (Sdk: (config: Config) => ISDK) => (config = DEFAULT_CONFIG): ISDK => {
   config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}`;
   return Sdk(config);
 };

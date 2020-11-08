@@ -1,31 +1,40 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthSDK = exports.getToken = void 0;
 const Http_1 = require("./utils/Http");
 const SdkFactory_1 = require("./utils/SdkFactory");
 const Validation_1 = require("./utils/Validation");
-const signup = ({ host, apiPrefix }) => (params) => {
-    Validation_1.validate(params, ['email', 'first_name', 'password', 'password_confirmation']);
+const signup = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['email', 'first_name', 'password', 'password_confirmation']);
     const url = `${host}${apiPrefix}/signup`;
     return Http_1.post(url, params);
-};
-const earlyAccessSignup = ({ host, apiPrefix }) => (params) => {
-    Validation_1.validate(params, ['email', 'first_name']);
+});
+const earlyAccessSignup = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['email', 'first_name']);
     const url = `${host}${apiPrefix}/signup/early_access`;
     return Http_1.post(url, params);
-};
-const confirmEarlyAccessSignup = ({ host, apiPrefix }) => (params) => {
-    Validation_1.validate(params, ['id', 'token', 'password', 'password_confirmation']);
+});
+const confirmEarlyAccessSignup = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['id', 'token', 'password', 'password_confirmation']);
     const url = `${host}${apiPrefix}/signup/early_access/${params.id}/confirm`;
     return Http_1.put(url, params);
-};
-const login = ({ host, apiPrefix }) => (params) => {
-    Validation_1.validate(params, ['email', 'password']);
+});
+const login = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['email', 'password']);
     const url = `${host}${apiPrefix}/signin`;
     return Http_1.post(url, params)
         .then(saveCredentials);
-};
+});
 const isLoggedIn = () => {
     return getCredentials().then(({ token }) => !!token);
 };
@@ -33,16 +42,16 @@ const getToken = () => {
     return getCredentials().then(({ token }) => token);
 };
 exports.getToken = getToken;
-const forgotPassword = ({ host, apiPrefix }) => (params) => {
-    Validation_1.validate(params, ['email']);
+const forgotPassword = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['email']);
     const url = `${host}${apiPrefix}/password/forgot`;
     return Http_1.post(url, params);
-};
-const resetPassword = ({ host, apiPrefix }) => (params) => {
-    Validation_1.validate(params, ['id', 'token', 'password', 'password_confirmation']);
+});
+const resetPassword = ({ host, apiPrefix }) => (params) => __awaiter(void 0, void 0, void 0, function* () {
+    yield Validation_1.validate(params, ['id', 'token', 'password', 'password_confirmation']);
     const url = `${host}${apiPrefix}/password/${params.id}/reset`;
     return Http_1.put(url, params);
-};
+});
 const profile = ({ host, apiPrefix }) => () => {
     const url = `${host}${apiPrefix}/profile`;
     return Http_1.get(url, { token: getToken() });
@@ -208,20 +217,29 @@ exports.SdkFactory = (Sdk) => (config = DEFAULT_CONFIG) => {
 },{}],5:[function(require,module,exports){
 "use strict";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validate = void 0;
-exports.validate = (params, mandatoryParams) => {
+exports.validate = (params, mandatoryParams) => __awaiter(void 0, void 0, void 0, function* () {
     const paramKeys = Object.keys(params);
     mandatoryParams.forEach(prop => {
         if (!paramKeys.includes(prop)) {
-            throw (new Error(`${prop} is missing`));
+            return Promise.reject(new Error(`${prop} is missing`));
         }
         if (params[prop] === '') {
-            throw (new Error(`${prop} should not be empty`));
+            return Promise.reject(new Error(`${prop} should not be empty`));
         }
     });
     return true;
-};
+});
 
 },{}],6:[function(require,module,exports){
 "use strict";

@@ -1,5 +1,5 @@
 import { get, post, put } from './utils/Http';
-import { SdkFactory, Config } from './utils/SdkFactory';
+import { SdkFactory, Config, apiCall } from './utils/SdkFactory';
 import { validate } from './utils/Validation';
 
 interface User {
@@ -51,29 +51,29 @@ interface ForgotPaswordParams {
   email: string;
 }
 
-const signup = ({ host, apiPrefix }: Config) => (params: SignupParams): Promise<any> => {
-  validate(params, ['email', 'first_name', 'password', 'password_confirmation']);
+const signup = ({ host, apiPrefix }: Config) => async (params: SignupParams): Promise<any> => {
+  await validate(params, ['email', 'first_name', 'password', 'password_confirmation']);
 
   const url = `${host}${apiPrefix}/signup`;
   return post(url, params);
 }
 
-const earlyAccessSignup = ({ host, apiPrefix }: Config) => (params: EarlyAccessSignupParams): Promise<any> => {
-  validate(params, ['email', 'first_name']);
+const earlyAccessSignup = ({ host, apiPrefix }: Config) => async (params: EarlyAccessSignupParams): Promise<any> => {
+  await validate(params, ['email', 'first_name']);
 
   const url = `${host}${apiPrefix}/signup/early_access`;
   return post(url, params);
 };
 
-const confirmEarlyAccessSignup = ({ host, apiPrefix }: Config) => (params: EarlyAccessSignupConfirmParams): Promise<any> => {
-  validate(params, ['id', 'token', 'password', 'password_confirmation']);
+const confirmEarlyAccessSignup = ({ host, apiPrefix }: Config) => async (params: EarlyAccessSignupConfirmParams): Promise<any> => {
+  await validate(params, ['id', 'token', 'password', 'password_confirmation']);
 
   const url = `${host}${apiPrefix}/signup/early_access/${params.id}/confirm`;
   return put(url, params);
 };
 
-const login = ({ host, apiPrefix }: Config) => (params: LoginParams): Promise<User> => {
-  validate(params, ['email', 'password']);
+const login = ({ host, apiPrefix }: Config) => async (params: LoginParams): Promise<User> => {
+  await validate(params, ['email', 'password']);
 
   const url = `${host}${apiPrefix}/signin`;
   return post<Credentials>(url, params)
@@ -88,15 +88,15 @@ const getToken = (): Promise<string> => {
   return getCredentials().then(({ token }) => token);
 }
 
-const forgotPassword = ({ host, apiPrefix }: Config) => (params: ForgotPaswordParams): Promise<any> => {
-  validate(params, ['email']);
+const forgotPassword = ({ host, apiPrefix }: Config) => async (params: ForgotPaswordParams): Promise<any> => {
+  await validate(params, ['email']);
 
   const url = `${host}${apiPrefix}/password/forgot`;
   return post(url, params);
 };
 
-const resetPassword = ({ host, apiPrefix }: Config) => (params: ResetPasswordParams): Promise<any> => {
-  validate(params, ['id', 'token', 'password', 'password_confirmation']);
+const resetPassword = ({ host, apiPrefix }: Config) => async (params: ResetPasswordParams): Promise<any> => {
+  await validate(params, ['id', 'token', 'password', 'password_confirmation']);
 
   const url = `${host}${apiPrefix}/password/${params.id}/reset`;
   return put(url, params);
