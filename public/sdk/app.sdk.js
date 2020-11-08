@@ -4,19 +4,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthSDK = exports.getToken = void 0;
 const Http_1 = require("./utils/Http");
 const SdkFactory_1 = require("./utils/SdkFactory");
+const Validation_1 = require("./utils/Validation");
 const signup = ({ host, apiPrefix }) => (params) => {
+    Validation_1.validate(params, ['email', 'first_name', 'password', 'password_confirmation']);
     const url = `${host}${apiPrefix}/signup`;
     return Http_1.post(url, params);
 };
 const earlyAccessSignup = ({ host, apiPrefix }) => (params) => {
+    Validation_1.validate(params, ['email', 'first_name']);
     const url = `${host}${apiPrefix}/signup/early_access`;
     return Http_1.post(url, params);
 };
 const confirmEarlyAccessSignup = ({ host, apiPrefix }) => (params) => {
+    Validation_1.validate(params, ['id', 'token', 'password', 'password_confirmation']);
     const url = `${host}${apiPrefix}/signup/early_access/${params.id}/confirm`;
     return Http_1.put(url, params);
 };
 const login = ({ host, apiPrefix }) => (params) => {
+    Validation_1.validate(params, ['email', 'password']);
     const url = `${host}${apiPrefix}/signin`;
     return Http_1.post(url, params)
         .then(saveCredentials);
@@ -29,10 +34,12 @@ const getToken = () => {
 };
 exports.getToken = getToken;
 const forgotPassword = ({ host, apiPrefix }) => (params) => {
+    Validation_1.validate(params, ['email']);
     const url = `${host}${apiPrefix}/password/forgot`;
     return Http_1.post(url, params);
 };
 const resetPassword = ({ host, apiPrefix }) => (params) => {
+    Validation_1.validate(params, ['id', 'token', 'password', 'password_confirmation']);
     const url = `${host}${apiPrefix}/password/${params.id}/reset`;
     return Http_1.put(url, params);
 };
@@ -101,7 +108,7 @@ if (window) {
     window.AuthSDK = AuthSDK;
 }
 
-},{"./utils/Http":3,"./utils/SdkFactory":4}],2:[function(require,module,exports){
+},{"./utils/Http":3,"./utils/SdkFactory":4,"./utils/Validation":5}],2:[function(require,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -116,9 +123,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./utils/SdkFactory"), exports);
 __exportStar(require("./utils/Http"), exports);
+__exportStar(require("./utils/Validation"), exports);
 __exportStar(require("./auth.sdk"), exports);
 
-},{"./auth.sdk":1,"./utils/Http":3,"./utils/SdkFactory":4}],3:[function(require,module,exports){
+},{"./auth.sdk":1,"./utils/Http":3,"./utils/SdkFactory":4,"./utils/Validation":5}],3:[function(require,module,exports){
 "use strict";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -193,11 +201,29 @@ const DEFAULT_CONFIG = {
     mode: 'cors',
 };
 exports.SdkFactory = (Sdk) => (config = DEFAULT_CONFIG) => {
-    config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}/`;
+    config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}`;
     return Sdk(config);
 };
 
 },{}],5:[function(require,module,exports){
+"use strict";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.validate = void 0;
+exports.validate = (params, mandatoryParams) => {
+    const paramKeys = Object.keys(params);
+    mandatoryParams.forEach(prop => {
+        if (!paramKeys.includes(prop)) {
+            throw (new Error(`${prop} is missing`));
+        }
+        if (params[prop] === '') {
+            throw (new Error(`${prop} should not be empty`));
+        }
+    });
+    return true;
+};
+
+},{}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppSDK = void 0;
@@ -210,4 +236,4 @@ if (window) {
     window.AppSDK = sdk_1.SdkFactory(AppSDK);
 }
 
-},{"../../lib/sdk/":2}]},{},[1,5]);
+},{"../../lib/sdk/":2}]},{},[1,6]);
