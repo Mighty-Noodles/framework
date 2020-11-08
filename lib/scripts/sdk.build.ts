@@ -2,22 +2,46 @@ import browserify from 'browserify';
 import tsify from 'tsify';
 import fs from 'fs';
 
-import Config from '../../src/config.json';
+import Config from '../../config.json';
 
-const bundleFs = fs.createWriteStream('./public/sdk/app.sdk.js');
+const DEFAULT_FOLDER = '.';
+const FILENAME = Config.sdk.outFile || 'app.sdk.js';
+const DEFAULT_FILEPATH = `${DEFAULT_FOLDER}/${FILENAME}`;
 
-const b = browserify()
-  .plugin(tsify)
-  .add('./lib/sdk/auth.sdk.ts');
+const LIB_SDKS = [
+  './lib/sdk/auth.sdk.ts',
+];
 
-Config.sdkPaths.forEach(path => {
-  b.add(path)
-});
+function run() {
+  const bundleFs = fs.createWriteStream(DEFAULT_FILEPATH);
+  const b = browserify()
+    .plugin(tsify)
+    .add('./lib/sdk/auth.sdk.ts');
 
-b.bundle()
-  .on('error', function (error) { console.error(error.toString()); })
-  .pipe(bundleFs);
+  addFiles(b);
 
-bundleFs.on('finish', function () {
+  b.bundle()
+    .on('error', function (error) { console.error(error.toString()); })
+    .pipe(bundleFs);
+    bundleFs.on('finish', copySdkToOutDirs);
+}
+
+function copySdkToOutDirs() {
+  Config.sdk.outDirs.forEach(dir => {
+    console.log('COPY DEFAULT_FILEPATH', DEFAULT_FILEPATH);
+    fs.copyFileSync(DEFAULT_FILEPATH, `${dir}/${FILENAME}`);
+  });
+
+  fs.unlinkSync(DEFAULT_FILEPATH);
+
   process.exit();
-});
+}
+
+function addFiles(b) {
+  [
+    ...Config.sdk.files,
+    ...LIB_SDKS,
+  ].forEach(file => b.add(file));
+}
+
+run();

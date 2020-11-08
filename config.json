@@ -1,0 +1,11 @@
+{
+  "sdk": {
+    "files": [
+      "./src/sdk/app.sdk.ts"
+    ],
+    "outDirs": [
+      "./public/sdk"
+    ],
+    "outFile": "app.sdk.js"
+  }
+}

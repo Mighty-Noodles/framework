@@ -1,5 +1,5 @@
 import { get, post, put } from './utils/Http';
-import { SdkFactory, Config, apiCall } from './utils/SdkFactory';
+import { SdkFactory, Config } from './utils/SdkFactory';
 import { validate } from './utils/Validation';
 
 interface User {
