@@ -1,5 +1,6 @@
 import browserify from 'browserify';
 import tsify from 'tsify';
+import fs from 'fs';
 
 import Config from '../../src/config.json';
 

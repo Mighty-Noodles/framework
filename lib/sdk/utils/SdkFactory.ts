@@ -16,6 +16,6 @@ interface ISDK {
 }
 
 export const SdkFactory = (Sdk: any) => (config = DEFAULT_CONFIG): ISDK => {
-  config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}/`;
+  config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}`;
   return Sdk(config);
 };
