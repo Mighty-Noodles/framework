@@ -28,7 +28,6 @@ function run() {
 
 function copySdkToOutDirs() {
   Config.sdk.outDirs.forEach(dir => {
-    console.log('COPY DEFAULT_FILEPATH', DEFAULT_FILEPATH);
     fs.copyFileSync(DEFAULT_FILEPATH, `${dir}/${FILENAME}`);
   });
 
