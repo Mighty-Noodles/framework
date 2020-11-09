@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 
-import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@libUtils/testUtils';
+import { User } from '../models/User';
+import { resetDatabase, testService } from '../../libUtils/testUtils';
 
 import { PasswordService } from './Password.service';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('PasswordService', () => {
   describe('reset', () => {

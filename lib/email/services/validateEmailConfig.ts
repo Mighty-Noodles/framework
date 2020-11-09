@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import EMAIL_CONFIG from 'templates/emails/email.config.json';
+import EMAIL_CONFIG from '../../../templates/emails/email.config.json';
 
 export { EMAIL_CONFIG };
 

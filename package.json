@@ -13,7 +13,7 @@
     "db:migrate": "node-pg-migrate create",
     "db:migrate:up": "yarn ts-node-path ./lib/scripts/migration/up.ts",
     "db:migrate:down": "yarn ts-node-path ./lib/scripts/migration/down.ts",
-    "build:server": "rm -rf ./build-server && tsc --outDir build-server",
+    "build:server": "rm -rf ./server-build && tsc --outDir server-build",
     "build:sdk": "ts-node ./lib/scripts/sdk.build.ts",
     "build": "yarn build:server && yarn build:sdk",
     "start:prod": "DEBUG=app:* node ./server-build/src/index.js"

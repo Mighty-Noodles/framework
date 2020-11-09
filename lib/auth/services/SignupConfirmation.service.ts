@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { User } from '@auth/models/User';
-import { sendSignupConfirmationRequiredEmail } from '@auth/email/SignupConfirmationRequired.email';
-import { sendEarlyAccessSignupConfirmationRequiredEmail } from '@auth/email/EarlyAccessSignupConfirmationRequired.email';
-import { sendSignupCompletedEmail } from '@auth/email/SignupCompleted.email';
-import { EmailService } from '@email/services/Email.service';
+import { User } from '../models/User';
+import { sendSignupConfirmationRequiredEmail } from '../email/SignupConfirmationRequired.email';
+import { sendEarlyAccessSignupConfirmationRequiredEmail } from '../email/EarlyAccessSignupConfirmationRequired.email';
+import { sendSignupCompletedEmail } from '../email/SignupCompleted.email';
+import { EmailService } from '../../email/services/Email.service';
 
 export class SignupConfirmationService {
   static tokenGenerator(user: User): string {

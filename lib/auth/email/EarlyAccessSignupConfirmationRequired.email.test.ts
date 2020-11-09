@@ -1,7 +1,7 @@
-import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@libUtils/testUtils';
-import { sendEarlyAccessSignupConfirmationRequiredEmail } from '@auth/email/EarlyAccessSignupConfirmationRequired.email';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { User } from '../models/User';
+import { resetDatabase, testService } from '../../libUtils/testUtils';
+import { sendEarlyAccessSignupConfirmationRequiredEmail } from '../email/EarlyAccessSignupConfirmationRequired.email';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('EarlyAccessSignupConfirmationRequired Email', () => {
   let user: User;

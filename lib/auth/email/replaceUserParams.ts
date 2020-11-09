@@ -1,4 +1,4 @@
-import { User } from '@auth/models/User';
+import { User } from '../models/User';
 
 export function replaceUserParams(text: string, user: User): string {
   return text

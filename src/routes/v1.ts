@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { profileRoutes } from '@auth/routes/Profile.routes';
-import { authRoutes } from '@auth/routes/Auth.routes';
+import { profileRoutes } from '../../lib/auth/routes/Profile.routes';
+import { authRoutes } from '../../lib/auth/routes/Auth.routes';
 
 const apiV1Routes = Router();
 

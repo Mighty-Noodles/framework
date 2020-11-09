@@ -2,15 +2,15 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { server } from '@auth/test/server';
-import { PASSWORD_HASH } from '@auth/test/constants';
-import { countModel, resetDatabase, testService } from '@libUtils/testUtils';
+import { server } from '../test/server';
+import { PASSWORD_HASH } from '../test/constants';
+import { countModel, resetDatabase, testService } from '../../libUtils/testUtils';
 
-import { User } from '@auth/models/User';
-import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
-import { PasswordService } from '@auth/services/Password.service';
+import { User } from '../models/User';
+import { SignupConfirmationService } from '../services/SignupConfirmation.service';
+import { PasswordService } from '../services/Password.service';
 
-import AppConfig from 'app.config.json';
+import AppConfig from '../../../app.config.json';
 
 describe('/auth route', () => {
   describe('POST /signup', () => {

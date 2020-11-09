@@ -1,7 +1,7 @@
-import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@libUtils/testUtils';
-import { sendSignupConfirmationRequiredEmail } from '@auth/email/SignupConfirmationRequired.email';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { User } from '../models/User';
+import { resetDatabase, testService } from '../../libUtils/testUtils';
+import { sendSignupConfirmationRequiredEmail } from '../email/SignupConfirmationRequired.email';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('SignupConfirmationRequired Email', () => {
   let user: User;

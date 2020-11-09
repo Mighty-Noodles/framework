@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { ProfileController } from '@auth/controllers/Profile.controller';
-import { AuthService } from '@auth/routes/Passport';
+import { ProfileController } from '../controllers/Profile.controller';
+import { AuthService } from '../routes/Passport';
 
 const profileRoutes = Router();
 

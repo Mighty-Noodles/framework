@@ -1,9 +1,9 @@
-import { User } from '@auth/models/User';
-import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
-import { PasswordService } from '@auth/services/Password.service';
-import { SignupService } from '@auth/services/Signup.service';
+import { User } from '../models/User';
+import { SignupConfirmationService } from '../services/SignupConfirmation.service';
+import { PasswordService } from '../services/Password.service';
+import { SignupService } from '../services/Signup.service';
 
-import { catchFn } from '@libUtils/logger';
+import { catchFn } from '../../libUtils/logger';
 
 const MANDATORY_SIGNUP_FIELDS = [
   'first_name',

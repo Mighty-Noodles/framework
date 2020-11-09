@@ -1,8 +1,8 @@
-import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@libUtils/testUtils';
+import { User } from '../models/User';
+import { resetDatabase, testService } from '../../libUtils/testUtils';
 
-import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { SignupConfirmationService } from '../services/SignupConfirmation.service';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('SignupConfirmationService', () => {
   describe('sendSignupConfirmationEmail', () => {

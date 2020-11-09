@@ -3,8 +3,8 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv-safe';
 
-import { authRoutes } from '@auth/routes/Auth.routes';
-import { profileRoutes } from '@auth/routes/Profile.routes';
+import { authRoutes } from '../routes/Auth.routes';
+import { profileRoutes } from '../routes/Profile.routes';
 
 dotenv.config();
 

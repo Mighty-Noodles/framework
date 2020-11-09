@@ -1,5 +1,5 @@
-import { User } from "@auth/models/User";
-import { resetDatabase } from "@libUtils/testUtils";
+import { User } from "../models/User";
+import { resetDatabase } from "../../libUtils/testUtils";
 import { replaceUserParams } from "./replaceUserParams";
 
 describe('replaceUserParams', () => {

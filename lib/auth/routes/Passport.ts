@@ -4,7 +4,7 @@ import passport from 'passport';
 import { Strategy as localStrategy } from 'passport-local';
 import { Strategy as JWTstrategy, ExtractJwt } from 'passport-jwt';
 
-import { User } from '@auth/models/User';
+import { User } from '../models/User';
 
 export type AuthRequest = Request & { user: User };
 

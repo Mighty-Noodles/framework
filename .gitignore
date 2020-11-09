@@ -5,4 +5,4 @@ notes.md
 yarn-error.log
 build
 coverage
-build-server
+server-build

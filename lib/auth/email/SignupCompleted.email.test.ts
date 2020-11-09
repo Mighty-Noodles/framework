@@ -1,7 +1,7 @@
-import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@libUtils/testUtils';
-import { sendSignupCompletedEmail } from '@auth/email/SignupCompleted.email';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { User } from '../models/User';
+import { resetDatabase, testService } from '../../libUtils/testUtils';
+import { sendSignupCompletedEmail } from '../email/SignupCompleted.email';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('SignupCompleted Email', () => {
   let user: User;

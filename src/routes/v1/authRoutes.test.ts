@@ -1,8 +1,8 @@
 import request from 'supertest';
 
-import { server } from 'src/server';
-import { User } from '@auth/models/User';
-import { resetDatabase } from '@libUtils/testUtils';
+import { server } from '../../server';
+import { User } from '../../../lib/auth/models/User';
+import { resetDatabase } from '../../../lib/libUtils/testUtils';
 
 describe('/auth route definitions', () => {
   let user: User;

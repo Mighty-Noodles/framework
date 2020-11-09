@@ -5,8 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv-safe';
 
 import { apiRoutes } from './routes/api';
-import { authPages, authViewPath, authPublic } from '@auth/routes/AuthPages.routes';
-import { appPage, appViewPath } from '@routes/AppPages.routes';
+import { authPages, authViewPath, authPublic } from '../lib/auth/routes/AuthPages.routes';
+import { appPage, appViewPath } from './routes/AppPages.routes';
 
 dotenv.config();
 

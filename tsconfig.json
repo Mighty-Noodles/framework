@@ -1,22 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES5",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "baseUrl": "./",
-    "paths": {
-      "@auth/*": ["./lib/auth/*"],
-      "@db/*": ["./lib/db/*"],
-      "@email/*": ["./lib/email/*"],
-      "@libUtils/*": ["./lib/libUtils/*"],
-
-      "@routes/*": ["./src/routes/*"],
-      "@controllers/*": ["./src/controllers/*"],
-      "@models/*": ["./src/models/*"],
-      "@services/*": ["./src/services/*"],
-      "@utils/*": ["./src/utils/*"]
-    }
+    "moduleResolution": "node"
   },
   "types": [
     "chrome"

@@ -1,7 +1,7 @@
-import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@libUtils/testUtils';
-import { SignupService } from '@auth/services/Signup.service';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { User } from '../models/User';
+import { expectCountChangedBy, resetDatabase, testService } from '../../libUtils/testUtils';
+import { SignupService } from '../services/Signup.service';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('SignupService', () => {
   describe('signup', () => {

@@ -1,10 +1,10 @@
 import fs from 'fs';
 
-import { User } from '@auth/models/User';
-import { EmailService } from '@email/services/Email.service';
+import { User } from '../models/User';
+import { EmailService } from '../../email/services/Email.service';
 import { replaceUserParams } from './replaceUserParams';
-import { validateEmailConfig, EMAIL_CONFIG } from '@email/services/validateEmailConfig';
-import { catchFn } from '@libUtils/logger';
+import { validateEmailConfig, EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
+import { catchFn } from '../../libUtils/logger';
 
 const EMAIL_TEMPLATE = fs.readFileSync('./templates/emails/signupCompleted.html', 'utf-8');
 

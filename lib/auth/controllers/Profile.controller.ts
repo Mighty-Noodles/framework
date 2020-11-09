@@ -1,8 +1,8 @@
 import { Response } from 'express';
 import _ from 'lodash';
 
-import { AuthRequest } from '@auth/routes/Passport';
-import { controllerCatchFn } from '@libUtils/logger';
+import { AuthRequest } from '../routes/Passport';
+import { controllerCatchFn } from '../../libUtils/logger';
 
 export const ProfileController = {
   index: (req: AuthRequest, res: Response): void => {

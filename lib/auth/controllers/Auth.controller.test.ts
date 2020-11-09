@@ -1,11 +1,11 @@
-import { AuthController } from '@auth/controllers/Auth.controller';
-import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@libUtils/testUtils';
-import { SignupConfirmationService } from '@auth/services/SignupConfirmation.service';
-import { PasswordService } from '@auth/services/Password.service';
+import { AuthController } from '../controllers/Auth.controller';
+import { User } from '../models/User';
+import { expectCountChangedBy, resetDatabase, testService } from '../../libUtils/testUtils';
+import { SignupConfirmationService } from '../services/SignupConfirmation.service';
+import { PasswordService } from '../services/Password.service';
 
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
-import AppConfig from 'app.config.json';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
+import AppConfig from '../../../app.config.json';
 
 describe('AuthController', () => {
   beforeEach(async () => {

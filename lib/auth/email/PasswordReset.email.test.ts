@@ -1,7 +1,7 @@
-import { User } from '@auth/models/User';
-import { resetDatabase, testService } from '@libUtils/testUtils';
-import { sendPasswordResetEmail } from '@auth/email/PasswordReset.email';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { User } from '../models/User';
+import { resetDatabase, testService } from '../../libUtils/testUtils';
+import { sendPasswordResetEmail } from '../email/PasswordReset.email';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('PasswordReset Email', () => {
   let user: User;

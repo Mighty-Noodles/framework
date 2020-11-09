@@ -1,7 +1,7 @@
-import { User } from '@auth/models/User';
-import { expectCountChangedBy, resetDatabase, testService } from '@libUtils/testUtils';
-import { EarlyAccessSignupService } from '@auth/services/EarlyAccessSignup.service';
-import { EMAIL_CONFIG } from '@email/services/validateEmailConfig';
+import { User } from '../models/User';
+import { expectCountChangedBy, resetDatabase, testService } from '../../libUtils/testUtils';
+import { EarlyAccessSignupService } from '../services/EarlyAccessSignup.service';
+import { EMAIL_CONFIG } from '../../email/services/validateEmailConfig';
 
 describe('EarlyAccessSignupService', () => {
   describe('signup', () => {

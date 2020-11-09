@@ -1,4 +1,4 @@
-import { validateEmailConfig } from '@email/services/validateEmailConfig';
+import { validateEmailConfig } from '../../email/services/validateEmailConfig';
 
 const CONFIG = {
   hello: {

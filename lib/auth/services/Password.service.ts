@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { User } from '@auth/models/User';
-import { sendPasswordResetEmail } from '@auth/email/PasswordReset.email';
+import { User } from '../models/User';
+import { sendPasswordResetEmail } from '../email/PasswordReset.email';
 
 interface PasswordResetParams {
   user: User;

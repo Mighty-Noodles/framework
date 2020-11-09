@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Model } from '@db/Model';
+import { Model } from '../../db/Model';
 
 interface UserJson {
   id: number;

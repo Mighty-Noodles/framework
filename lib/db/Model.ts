@@ -1,7 +1,7 @@
 import Knex from 'knex';
 import { Model } from 'objection';
 
-import { connection } from '@db/connection.config';
+import { connection } from '../db/connection.config';
 
 const knex = Knex(connection);
 

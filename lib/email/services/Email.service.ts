@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk';
 import Mail from 'nodemailer/lib/mailer';
 import nodemailer from 'nodemailer';
-import { TestService } from '@libUtils/testUtils';
-import { catchFn } from '@libUtils/logger';
+import { TestService } from '../../libUtils/testUtils';
+import { catchFn } from '../../libUtils/logger';
 
 const transporter = getTransporter();
 
