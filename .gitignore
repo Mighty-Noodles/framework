@@ -6,4 +6,4 @@ yarn-error.log
 build
 coverage
 server-build
-public/sdk/*/js
+public/sdk/*.js
