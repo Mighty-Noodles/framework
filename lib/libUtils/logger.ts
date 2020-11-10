@@ -31,7 +31,7 @@ function errorLog(...params): void {
 }
 
 const controllerCatchFn = (defaultMessage = 'Some error occurred', res: Response) => (error: any): void => {
-  if (error?.code >= 500) {
+  if (!error?.code || error?.code >= 500) {
     errorLog(defaultMessage, error);
   }
 
@@ -42,10 +42,6 @@ const controllerCatchFn = (defaultMessage = 'Some error occurred', res: Response
 };
 
 const catchFn = (defaultMessage = 'Some error occurred') => (error: any): Promise<any> => {
-  if (error?.code >= 500) {
-    errorLog(defaultMessage, error);
-  }
-
   const code = (_.isNumber(error?.code) && error?.code) || 500;
   const message = error?.message || defaultMessage;
 
