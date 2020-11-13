@@ -121,7 +121,7 @@ const profile = ({ host, apiPrefix }: Config) => (): Promise<any> => {
 
 const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
   return new Promise<any>((resolve) => {
-    if (!chrome?.storage) {
+    if (!isChromeExtension()) {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       return resolve(user);
@@ -136,9 +136,13 @@ const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
   });
 };
 
+const isChromeExtension = (): boolean => {
+  return typeof chrome !== 'undefined' && !chrome?.storage;
+};
+
 const getCredentials = (): Promise<Credentials> => {
   return new Promise((resolve) => {
-    if (!chrome?.storage) {
+    if (!isChromeExtension()) {
       const userParams = localStorage.getItem('user');
       const user: User = userParams !== 'undefined' ? JSON.parse(userParams) : undefined;
       const token = localStorage.getItem('token');
@@ -155,8 +159,8 @@ const logout = (): Promise<void> => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
 
-  const chromePromise = new Promise<void>((resolve) => {
-    if (!chrome?.storage) {
+  return new Promise<void>((resolve) => {
+    if (!isChromeExtension()) {
       return resolve();
     }
 
@@ -167,8 +171,6 @@ const logout = (): Promise<void> => {
       resolve();
     });
   });
-
-  return chromePromise;
 };
 
 export {
