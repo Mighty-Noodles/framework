@@ -1,9 +1,11 @@
-.DS_Store
 node_modules
+.DS_Store
 .env
 notes.md
-yarn-error.log
 build
 coverage
 server-build
+yarn-error.log
+
+# Optional
 public/sdk/*.js
