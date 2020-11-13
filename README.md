@@ -31,13 +31,31 @@ This project uses `Mailcatcher` to read emails in SMTP port 1025. You can read t
 
 ### SDK
 
-##### Auth
+You can load the SDK in the browser with a `<script>` tag and `AuthSDK` and other vars will be set as a global var in `window`.
 
-You can load the SDK in the browser with a `<script>` tag and `AuthSDK` var will be set as a global var in `window`.
+#### App
 
-Example:
+Each project will contain it's own SDK. Load the SDK file with the `<script>` tag the AppSDK will be available as a gloval too.
 
+```javascript
+const appSDK = AppSDK({
+  host: 'http://localhost:3000', // Default is ''
+  mode: 'cors', // default
+  version: 1, // default
+  apiPrefix: `/api/v1` // default. 'v1' is the version set in the `version` prop. If apiPrefix is set, `version` is ignored.
+})
+
+appSDK
+  .someCommand()
+  .then((result) => console.log(result)
+  .catch((err) => console.error(err));
 ```
+
+Open `./src/sdk/app.sdk.ts` for available API.
+
+#### Auth
+
+```javascript
 const authSdk = AuthSDK({
   host: 'http://localhost:3000', // Default is ''
   mode: 'cors', // default
@@ -47,8 +65,8 @@ const authSdk = AuthSDK({
 
 authSdk
   .login({ email: 'john@email.com', password: '12345678' })
-  .then({ user } => console.log('User is': user))
+  .then((user) => console.log('User is': user))
   .catch((err) => console.error('Login failure', err));
 ```
 
-Open `./lib/sdk/auth.sdk.ts` for available commands.
+Open `./lib/sdk/auth.sdk.ts` for available API.
