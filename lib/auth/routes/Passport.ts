@@ -8,10 +8,6 @@ import { User } from '../models/User';
 
 export type AuthRequest = Request & { user: User };
 
-if (!process.env.JWT_SECRET) {
-  throw 'JWT_SECRET is not setup';
-}
-
 export class AuthService {
   static passportJwt = passport.authenticate('jwt', { session: false });
 }
@@ -52,7 +48,10 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT')
     },
     async (token, done) => {
-      const user = await User.query().select('id', 'email', 'first_name', 'last_name').findById(token.id);
+      const user = await User.query()
+        .select('id', 'email', 'first_name', 'last_name')
+        .skipUndefined()
+        .findOne({ id: token.id, email: token.email });
 
       if (user) {
         return done(null, user);
