@@ -71,6 +71,13 @@ describe('/auth route definitions', () => {
       .end(done);
   });
 
+  test('POST /signup/pre_launch', (done) => {
+    request(server)
+      .post('/api/v1/signup/pre_launch')
+      .expect(422)
+      .end(done);
+  });
+
   test('GET /login', (done) => {
     request(server)
       .get(`/login`)
@@ -109,6 +116,13 @@ describe('/auth route definitions', () => {
   test('GET /signup', (done) => {
     request(server)
       .get(`/signup`)
+      .expect(200)
+      .end(done);
+  });
+
+  test('GET /signup/pre_launch', (done) => {
+    request(server)
+      .get(`/signup/pre_launch`)
       .expect(200)
       .end(done);
   });

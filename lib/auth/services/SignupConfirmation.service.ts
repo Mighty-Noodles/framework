@@ -4,6 +4,7 @@ import { sendSignupConfirmationRequiredEmail } from '../email/SignupConfirmation
 import { sendEarlyAccessSignupConfirmationRequiredEmail } from '../email/EarlyAccessSignupConfirmationRequired.email';
 import { sendSignupCompletedEmail } from '../email/SignupCompleted.email';
 import { EmailService } from '../../email/services/Email.service';
+import { sendPreLaunchSignupEmail } from '../email/PreLaunchSignup.email';
 
 export class SignupConfirmationService {
   static tokenGenerator(user: User): string {
@@ -71,5 +72,9 @@ export class SignupConfirmationService {
     const token = this.tokenGenerator(user);
 
     return sendEarlyAccessSignupConfirmationRequiredEmail({ user, token });
+  }
+
+  static async sendPreLaunchSignupEmail(user: User): Promise<ReturnType<typeof EmailService.sendEmail>> {
+    return sendPreLaunchSignupEmail({ user });
   }
 }

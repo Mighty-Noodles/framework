@@ -13,5 +13,8 @@
   "signupConfirmationRequired": {
     "subject": "One more step",
     "action_url": "{DOMAIN}/api/v1/signup/{USER_ID}/confirm?token={TOKEN}"
+  },
+  "preLaunchSignup": {
+    "subject": "Wait for more news!"
   }
 }

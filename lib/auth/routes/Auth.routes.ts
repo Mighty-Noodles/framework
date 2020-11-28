@@ -10,6 +10,8 @@ authRoutes.put('/signup/:id/confirm', AuthController.confirmSignup);
 authRoutes.post('/signup/early_access', AuthController.earlyAccessSignup);
 authRoutes.put('/signup/early_access/:id/confirm', AuthController.earlyAccessConfirmSignup);
 
+authRoutes.post('/signup/pre_launch', AuthController.preLaunchSignup);
+
 authRoutes.post('/login', AuthController.login);
 
 authRoutes.post('/password/forgot', AuthController.request_reset_password);

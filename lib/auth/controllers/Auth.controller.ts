@@ -11,6 +11,7 @@ import { EarlyAccessSignupService } from '../services/EarlyAccessSignup.service'
 import { controllerCatchFn } from '../../libUtils/logger';
 
 import AppConfig from '../../../app.config.json';
+import { PreLaunchSignupService } from '../services/PreLaunchSignup.service';
 
 export const AuthController = {
   signup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -98,6 +99,16 @@ export const AuthController = {
         res.status(200).json({ item: user.toJson() });
       })
       .catch(controllerCatchFn('Error on reset password', res));
+  },
+
+  preLaunchSignup: async (req: AuthRequest, res: Response): Promise<void> => {
+    return PreLaunchSignupService.signup(req.body)
+      .then((user: User) => {
+        res.status(200).json({
+          item: user.toJson(),
+        });
+      })
+      .catch(controllerCatchFn('Error on pre-launch signup', res));
   },
 
   earlyAccessSignup: async (req: AuthRequest, res: Response): Promise<void> => {

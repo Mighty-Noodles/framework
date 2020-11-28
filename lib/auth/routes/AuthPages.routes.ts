@@ -11,6 +11,7 @@ const AuthPagesController = {
   earlyAccessSignup:              (req: Request, res: Response): void => res.render('signupEarlyAccess'),
   earlyAccessSignupConfirmation:  (req: Request, res: Response): void => res.render('signupEarlyAccessConfirmation', WithCredential(req)),
   signup:                         (req: Request, res: Response): void => res.render('signup'),
+  preLaunch:                      (req: Request, res: Response): void => res.render('preLaunchSignup'),
 };
 
 authPages.get('/login',                           AuthPagesController.login);
@@ -19,6 +20,7 @@ authPages.get('/password/:id/reset',              AuthPagesController.passwordRe
 authPages.get('/signup/early_access',             AuthPagesController.earlyAccessSignup);
 authPages.get('/signup/early_access/:id/confirm', AuthPagesController.earlyAccessSignupConfirmation);
 authPages.get('/signup',                          AuthPagesController.signup);
+authPages.get('/signup/pre_launch',               AuthPagesController.preLaunch);
 
 const authViewPath = './lib/auth/views';
 const authPublic = 'lib/auth/public';

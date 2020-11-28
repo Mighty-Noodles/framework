@@ -329,4 +329,44 @@ describe('/auth route', () => {
         });
     });
   });
+
+  describe('POST /signup/pre_launch', () => {
+    beforeEach(async () => {
+      await resetDatabase();
+    });
+
+    test('creates and return user without hash', async (done) => {
+      expect.hasAssertions();
+      const initialCount = await countModel(User);
+
+      const sendEmail = jest.fn().mockReturnValue(Promise.resolve())
+      testService({
+        Email: { sendEmail },
+      });
+
+      request(server)
+        .post('/auth/signup/pre_launch')
+        .send({ email: 'a@a.com', first_name: 'a', last_name: 'b' })
+        .expect(200)
+        .end(async (err, res) => {
+          const { body } = res;
+          expect(body).toMatchObject({
+            item: {
+              id: expect.any(Number),
+              email: 'a@a.com',
+              first_name: 'a',
+              last_name: 'b',
+            },
+          });
+          expect(body.item.hash).not.toBeDefined();
+          const finalCount = await countModel(User);
+
+          expect(finalCount).toEqual(initialCount + 1);
+
+          expect(sendEmail).toHaveBeenCalled();
+
+          done(err);
+        });
+    });
+  });
 });

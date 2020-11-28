@@ -142,4 +142,38 @@ describe('SignupConfirmationService', () => {
       });
     });
   });
+  describe('sendPreLaunchSignupEmail', () => {
+    let user: User;
+
+    beforeAll(async () => {
+      await resetDatabase();
+      user = await User.query().insertAndFetch(
+        { email: 'user@email.com', first_name: 'a', last_name: 'b', hash: 'hashedpass', confirmed: true },
+      )
+    });
+
+    describe('success', () => {
+      test('sends email', async() => {
+        const sendEmail = jest.fn().mockReturnValueOnce(Promise.resolve());
+        testService({
+          Email: { sendEmail },
+        });
+
+        await SignupConfirmationService.sendPreLaunchSignupEmail(user);
+
+        expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.preLaunchSignup.subject }));
+      });
+    });
+
+    describe('on error', () => {
+      test('return error message', async () => {
+        const sendEmail = jest.fn().mockImplementationOnce(() => Promise.reject({ code: 100, message: 'some_error' }));
+        testService({
+          Email: { sendEmail },
+        });
+
+        await expect(SignupConfirmationService.sendPreLaunchSignupEmail(user)).rejects.toEqual({ code: 100, message: 'some_error' });
+      });
+    });
+  });
 });

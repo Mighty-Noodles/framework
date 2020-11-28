@@ -77,6 +77,13 @@ const earlyAccessSignup = ({ host, apiPrefix }: Config) => async (params: EarlyA
   return post(url, params);
 };
 
+const preLaunchSignup = ({ host, apiPrefix }: Config) => async (params: EarlyAccessSignupParams): Promise<any> => {
+  await validate(params, ['email', 'first_name']);
+
+  const url = `${host}${apiPrefix}/signup/pre_launch`;
+  return post(url, params);
+};
+
 const confirmEarlyAccessSignup = ({ host, apiPrefix }: Config) => async (params: EarlyAccessSignupConfirmParams): Promise<any> => {
   await validate(params, ['id', 'token', 'password', 'password_confirmation']);
 
@@ -185,6 +192,8 @@ const AuthSDK = SdkFactory((config: Config) => {
 
     earlyAccessSignup: earlyAccessSignup(config),
     confirmEarlyAccessSignup: confirmEarlyAccessSignup(config),
+
+    preLaunchSignup: preLaunchSignup(config),
 
     login: login(config),
     logout,

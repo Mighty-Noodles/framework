@@ -15,8 +15,7 @@ const LIB_SDKS = [
 function run() {
   const bundleFs = fs.createWriteStream(DEFAULT_FILEPATH);
   const b = browserify()
-    .plugin(tsify)
-    .add('./lib/sdk/auth.sdk.ts');
+    .plugin(tsify);
 
   addFiles(b);
 

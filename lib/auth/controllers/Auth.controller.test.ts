@@ -339,7 +339,6 @@ describe('AuthController', () => {
     });
   });
 
-
   describe('earlyAccessConfirmSignup', () => {
     let token: string, user: User;
 
@@ -394,6 +393,56 @@ describe('AuthController', () => {
         code: 401,
         message: 'Token is invalid',
       });
+    });
+  });
+
+  describe('preLaunchSignup', () => {
+    let res, req, status, json;
+
+    beforeEach(() => {
+      testService({
+        Email: { sendEmail: () => Promise.resolve() },
+      });
+    });
+
+    beforeEach(() => {
+      json = jest.fn();
+      status = jest.fn().mockReturnValueOnce({ json });
+
+      req = {
+        body: {
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+        },
+      };
+      res = { status };
+    });
+
+    test('return new created user without hash', async () => {
+      await expectCountChangedBy(User, () => AuthController.preLaunchSignup(req, res), 1);
+
+      expect(status).toHaveBeenCalledWith(200);
+      expect(json).toHaveBeenCalledWith({
+        item: {
+          id: expect.any(Number),
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+        },
+      });
+      expect(json.mock.calls[0][0].item.hash).not.toBeDefined();
+    });
+
+    test('sends confirmation email', async () => {
+      const sendEmail = jest.fn().mockImplementation(() => Promise.resolve());
+      testService({
+        Email: { sendEmail },
+      });
+
+      await expectCountChangedBy(User, () => AuthController.preLaunchSignup(req, res), 1);
+
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({ subject: EMAIL_CONFIG.preLaunchSignup.subject }));
     });
   });
 });
