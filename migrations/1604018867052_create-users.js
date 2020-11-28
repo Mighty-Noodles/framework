@@ -9,10 +9,11 @@ exports.up = pgm => {
     first_name: { type: 'varchar(255)', notNull: true },
     last_name: { type: 'varchar(255)' },
     confirmed: { type: 'boolean', notNull: true, default: false },
+    admin: { type: 'boolean', notNull: true, default: false },
     hash: { type: 'varchar(255)' },
     metadata: { type: 'json' },
 
-    created_at: { type: 'timestamptz', notNull: true, default: 'NOW()' },
+    created_at: { type: 'timestamptz', notNull: true, default: pgm.func('NOW()') },
   });
 
   pgm.addIndex('users', ['id', 'email']);
