@@ -372,6 +372,7 @@ describe('AuthController', () => {
       expect(status).toHaveBeenCalledWith(200);
       expect(json).toHaveBeenCalledWith({
         item: user.toJson(),
+        token: expect.any(String),
       });
     });
 

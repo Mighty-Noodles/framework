@@ -317,7 +317,10 @@ describe('/auth route', () => {
         .send({ token, password: 'STRONGPASS@', password_confirmation: 'STRONGPASS@' })
         .expect(200)
         .end(async (err, res) => {
-          expect(res.body).toEqual({ item: user.toJson() })
+          expect(res.body).toMatchObject({
+            item: user.toJson(),
+            token: expect.any(String),
+          });
 
           const confirmedUser = await User.query().findById(user.id);
           expect(confirmedUser.confirmed).toBeTruthy();

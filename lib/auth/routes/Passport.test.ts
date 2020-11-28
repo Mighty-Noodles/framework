@@ -39,10 +39,7 @@ describe('Passport', () => {
         .get('/profile')
         .set('Authorization', 'JWT wrong')
         .expect(401)
-        .end((err, res) => {
-          console.log(res.body)
-          done(err);
-        })
+        .end(done)
     });
 
     test('return 401 when token is missing', (done) => {

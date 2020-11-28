@@ -81,7 +81,8 @@ const confirmEarlyAccessSignup = ({ host, apiPrefix }: Config) => async (params:
   await validate(params, ['id', 'token', 'password', 'password_confirmation']);
 
   const url = `${host}${apiPrefix}/signup/early_access/${params.id}/confirm`;
-  return put(url, params);
+  return put(url, params)
+    .then(({ token, item }) => saveCredentials({ token, user: item }));
 };
 
 const login = ({ host, apiPrefix }: Config) => async (params: LoginParams): Promise<User> => {

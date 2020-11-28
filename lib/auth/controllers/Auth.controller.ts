@@ -118,8 +118,12 @@ export const AuthController = {
         password_confirmation: req.body.password_confirmation,
       }))
       .then((user) => {
+        const tokenParams = { id: user.id, email: user.email };
+        const token = jwt.sign(tokenParams, process.env.JWT_SECRET);
+
         res.status(200).json({
           item: user.toJson(),
+          token,
         });
       })
       .catch(controllerCatchFn('Error on early access signup confirmation', res));
