@@ -15,7 +15,9 @@ interface ISDK {
   [key: string]: (params: any) => Promise<any>;
 }
 
-export const SdkFactory = (Sdk: (config: Config) => ISDK) => (config = DEFAULT_CONFIG): ISDK => {
+export const SdkFactory = (Sdk: (config: Config) => ISDK) => (config: Config = {}): ISDK => {
+  config = Object.assign({}, DEFAULT_CONFIG, config);
+
   config.apiPrefix = config.apiPrefix || `/api/v${config.version || 1}`;
   return Sdk(config);
 };
