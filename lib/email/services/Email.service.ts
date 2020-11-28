@@ -15,14 +15,18 @@ export class EmailService {
 
 function getTransporter(): Mail {
   switch (process.env.NODE_ENV) {
-    case 'test':
-      return {
-        sendMail: sendTest,
-      } as any; // eslint-disable-line
     case 'production':
       return nodemailer.createTransport({
         SES: new AWS.SES({ region: process.env.AWS_REGION }),
       });
+    case 'test':
+      return {
+        sendMail: sendTest,
+      } as any; // eslint-disable-line
+    case 'e2e':
+      return {
+        sendMail: () => Promise.resolve(),
+      } as any; // eslint-disable-line
     case 'development':
     default:
       return nodemailer.createTransport({

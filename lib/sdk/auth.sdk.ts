@@ -88,8 +88,8 @@ const login = ({ host, apiPrefix }: Config) => async (params: LoginParams): Prom
   await validate(params, ['email', 'password']);
 
   const url = `${host}${apiPrefix}/login`;
-  return post<Credentials>(url, params)
-    .then(saveCredentials);
+  return post(url, params)
+    .then(({ token, item }) => saveCredentials({ token, user: item }));
 };
 
 const isLoggedIn = (): Promise<boolean> => {
@@ -137,7 +137,7 @@ const saveCredentials = ({ token, user }: Credentials): Promise<User> => {
 };
 
 const isChromeExtension = (): boolean => {
-  return typeof chrome !== 'undefined' && !chrome?.storage;
+  return typeof chrome !== 'undefined' && !!chrome?.storage;
 };
 
 const getCredentials = (): Promise<Credentials> => {

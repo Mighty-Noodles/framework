@@ -26,6 +26,7 @@ const productionConn = DATABASE_URL_STRING ? DATABASE_URL : {
 };
 
 export const conn = NODE_ENV === 'test' ? DATABASE_TEST_URL :
+                    NODE_ENV === 'e2e' ? DATABASE_TEST_URL :
                     NODE_ENV === 'staging' ? productionConn :
                     NODE_ENV === 'production' ? productionConn :
                     DATABASE_DEV_URL;
