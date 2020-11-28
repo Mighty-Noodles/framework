@@ -6,6 +6,7 @@
   "scripts": {
     "dev:prod": "NODE_ENV=production nodemon",
     "dev": "NODE_ENV=development nodemon",
+    "dev:e2e": "NODE_ENV=e2e nodemon",
     "test": "jest --runInBand --forceExit --detectOpenHandles",
     "test:watch": "yarn test --watch",
     "test:setup": "yarn ts-node ./lib/scripts/test.setup.ts",
