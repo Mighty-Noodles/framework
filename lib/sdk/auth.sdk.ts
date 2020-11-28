@@ -23,6 +23,7 @@ interface SignupParams {
   email: string;
   first_name: string;
   last_name?: string;
+  metadata?: Record<string, unknown>;
   password: string;
   password_confirmation: string;
 }
@@ -31,6 +32,7 @@ interface EarlyAccessSignupParams {
   email: string;
   first_name: string;
   last_name?: string;
+  metadata?: Record<string, unknown>;
 }
 
 interface EarlyAccessSignupConfirmParams {

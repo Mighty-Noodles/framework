@@ -10,6 +10,7 @@ exports.up = pgm => {
     last_name: { type: 'varchar(255)' },
     confirmed: { type: 'boolean', notNull: true, default: false },
     hash: { type: 'varchar(255)' },
+    metadata: { type: 'json' },
 
     created_at: { type: 'timestamptz', notNull: true, default: 'NOW()' },
   });

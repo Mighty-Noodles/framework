@@ -18,11 +18,12 @@ interface SignupParams {
   email: string;
   password: string;
   password_confirmation: string
+  metadata?: Record<string, unknown>;
 }
 
 export const SignupService = {
   signup: async (params: SignupParams): Promise<User> => {
-    const { first_name, last_name, email, password, password_confirmation } = params;
+    const { first_name, last_name, email, password, password_confirmation, metadata } = params;
 
     const missingProps = MANDATORY_SIGNUP_FIELDS.filter(prop => {
       if (!params[prop]) {
@@ -47,8 +48,8 @@ export const SignupService = {
 
     const hash = await bcrypt.hash(password, 10);
     const user =
-      (existingUser && await existingUser.$query().updateAndFetch({ first_name, last_name, hash })) ||
-      await User.query().insertAndFetch({ email, first_name, last_name, hash });
+      (existingUser && await existingUser.$query().updateAndFetch({ first_name, last_name, hash, metadata })) ||
+      await User.query().insertAndFetch({ email, first_name, last_name, hash, metadata });
 
     return SignupConfirmationService.sendSignupConfirmationEmail(user)
       .then(() => user)

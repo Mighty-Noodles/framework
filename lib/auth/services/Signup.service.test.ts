@@ -19,17 +19,25 @@ describe('SignupService', () => {
         last_name: 'b',
         password: 'StR0NGP@SS!',
         password_confirmation: 'StR0NGP@SS!',
+        metadata: { newsletter: true },
       };
 
       test('return new created user', async () => {
         const result = await expectCountChangedBy(User, () => SignupService.signup(params), 1);
 
         expect(result).toMatchObject({
-            id: expect.any(Number),
-            email: 'a@a.com',
-            first_name: 'a',
-            last_name: 'b',
+          id: expect.any(Number),
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
         });
+      });
+
+      test('saves metadata', async () => {
+        const result = await expectCountChangedBy(User, () => SignupService.signup(params), 1);
+
+        const newUser = await User.query().findById(result.id);
+        expect(newUser.metadata).toEqual({ newsletter: true });
       });
 
       test('sends confirmation email', async () => {

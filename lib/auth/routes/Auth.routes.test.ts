@@ -29,7 +29,14 @@ describe('/auth route', () => {
 
       request(server)
         .post('/auth/signup')
-        .send({ email: 'a@a.com', first_name: 'a', last_name: 'b', password: 'StR0NGP@SS!', password_confirmation: 'StR0NGP@SS!' })
+        .send({
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+          password: 'StR0NGP@SS!',
+          password_confirmation: 'StR0NGP@SS!',
+          metadata: { newsletter: true },
+        })
         .expect(200)
         .end(async (err, res) => {
           const { body } = res;
@@ -269,7 +276,12 @@ describe('/auth route', () => {
 
       request(server)
         .post('/auth/signup/early_access')
-        .send({ email: 'a@a.com', first_name: 'a', last_name: 'b' })
+        .send({
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+          metadata: { newsletter: true },
+        })
         .expect(200)
         .end(async (err, res) => {
           const { body } = res;
@@ -346,7 +358,12 @@ describe('/auth route', () => {
 
       request(server)
         .post('/auth/signup/pre_launch')
-        .send({ email: 'a@a.com', first_name: 'a', last_name: 'b' })
+        .send({
+          email: 'a@a.com',
+          first_name: 'a',
+          last_name: 'b',
+          metadata: { newsletter: true },
+        })
         .expect(200)
         .end(async (err, res) => {
           const { body } = res;

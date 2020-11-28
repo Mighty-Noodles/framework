@@ -17,6 +17,7 @@ describe('EarlyAccessSignupService', () => {
         email: 'a@a.com',
         first_name: 'a',
         last_name: 'b',
+        metadata: { newsletter: true },
       };
 
       test('return new created user', async () => {
@@ -28,6 +29,13 @@ describe('EarlyAccessSignupService', () => {
             first_name: 'a',
             last_name: 'b',
         });
+      });
+
+      test('saves metadata', async () => {
+        const result = await expectCountChangedBy(User, () => EarlyAccessSignupService.signup(params), 1);
+
+        const newUser = await User.query().findById(result.id);
+        expect(newUser.metadata).toEqual({ newsletter: true });
       });
 
       test('sends confirmation email', async () => {

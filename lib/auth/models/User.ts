@@ -13,6 +13,7 @@ export class User extends Model {
   email: string;
   first_name: string;
   last_name?: string;
+  metadata?: Record<string, unknown>;
 
   confirmed: boolean;
   created_at: Date;
