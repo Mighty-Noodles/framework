@@ -9,7 +9,25 @@ import { User } from '../models/User';
 export type AuthRequest = Request & { user: User };
 
 export class AuthService {
-  static passportJwt = passport.authenticate('jwt', { session: false });
+  static passportJwt = (req, res, next) => passport.authenticate('jwt', { session: false }, (error, user) => {
+    if (error || !user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    req.user = user;
+
+    next();
+  })(req, res, next);
+
+  static adminPassportJwt = (req, res, next) => passport.authenticate('jwt', { session: false }, (error, user) => {
+    if (error || !user || !user.admin) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    req.user = user;
+
+    next();
+  })(req, res, next);
 }
 
 passport.use(
@@ -48,8 +66,9 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT')
     },
     async (token, done) => {
+      console.log(token);
       const user = await User.query()
-        .select('id', 'email', 'first_name', 'last_name')
+        .select('id', 'email', 'first_name', 'last_name', 'admin')
         .skipUndefined()
         .findOne({ id: token.id, email: token.email });
 
