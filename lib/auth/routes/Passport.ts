@@ -66,7 +66,6 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT')
     },
     async (token, done) => {
-      console.log(token);
       const user = await User.query()
         .select('id', 'email', 'first_name', 'last_name', 'admin')
         .skipUndefined()
