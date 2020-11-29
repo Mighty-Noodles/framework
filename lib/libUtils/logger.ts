@@ -48,9 +48,18 @@ const catchFn = (defaultMessage = 'Some error occurred') => (error: any): Promis
   return Promise.reject({ code, message });
 };
 
+const ignoreCatchFn = (defaultMessage = 'Some error occurred', defaultReturn?: any) => (error: any): Promise<any> => {
+  const message = error?.message || defaultMessage;
+
+  errorLog(message, error);
+
+  return Promise.resolve(defaultReturn);
+};
+
 export {
   appLog,
   errorLog,
   catchFn,
   controllerCatchFn,
+  ignoreCatchFn,
 };
