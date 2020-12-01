@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/ban-ts-comment */
 
 import debug from 'debug';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import _ from 'lodash';
+import { AuthRequest } from '../auth/routes/Passport';
+import { EmailService } from '../email/services/Email.service';
 
 const appLog = debug('app');
 const errorLogDebug = debug('app:error');
@@ -30,7 +32,7 @@ function errorLog(...params): void {
   errorLogDebug(...log);
 }
 
-const controllerCatchFn = (defaultMessage = 'Some error occurred', res: Response) => (error: any): void => {
+const controllerCatchFn = (defaultMessage = 'Some error occurred', req: Request | AuthRequest, res: Response) => (error: any): void => {
   if (!error?.code || error?.code >= 500) {
     errorLog(defaultMessage, error);
   }
@@ -39,6 +41,62 @@ const controllerCatchFn = (defaultMessage = 'Some error occurred', res: Response
   const message = code >= 500 ? defaultMessage : error?.message;
 
   res.status(code).json({ code, message });
+
+  if (code >= 500) {
+    sendErrorEmail(req, error);
+  }
+};
+
+const sendErrorEmail = (req: Request | AuthRequest, error: any) => {
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
+  // @ts-ignore
+  const user = req.user ? [req.user?.id, req.user?.email].join(' / ') : '';
+
+  return EmailService.sendEmail({
+    to: process.env.ERROR_EMAIL_RECIPIENT,
+    from: process.env.ERROR_EMAIL_SENDER,
+    subject: `[ERROR] ${process.env.APP_NAME}`,
+    html: `
+      <h2>${process.env.APP_NAME}</h2>
+
+      <h3>And error ocurred in the app.</h3>
+
+      <ul>
+        <li>Host: ${req.headers.host}</li>
+        <li>originalUrl: ${req.method} ${req.originalUrl}</li>
+        <li>From: ${req.headers.referer}</li>
+      </ul>
+
+      <h3>User</h3>
+
+      ${user}
+
+      <h2>Query:</h2>
+
+      <pre>
+        ${JSON.stringify(req.query)}
+      </pre>
+
+      <h2>Body:</h2>
+
+      <pre>
+        ${JSON.stringify(_.omit(req.body, 'password'))}
+      </pre>
+
+      <h2>${error?.message}</h2>
+
+      <pre>
+        ${error}
+      </pre>
+
+      <pre>
+        ${error?.stack}
+      </pre>
+    `
+  });
 };
 
 const catchFn = (defaultMessage = 'Some error occurred') => (error: any): Promise<any> => {

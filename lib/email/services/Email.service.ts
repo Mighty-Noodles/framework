@@ -2,14 +2,14 @@ import AWS from 'aws-sdk';
 import Mail from 'nodemailer/lib/mailer';
 import nodemailer from 'nodemailer';
 import { TestService } from '../../libUtils/testUtils';
-import { ignoreCatchFn } from '../../libUtils/logger';
+import { catchFn } from '../../libUtils/logger';
 
 const transporter = getTransporter();
 
 export class EmailService {
   static async sendEmail(emailParams: Mail.Options): Promise<any> { // eslint-disable-line
     return transporter.sendMail(emailParams)
-      .catch(ignoreCatchFn('Error sending email'));
+      .catch(catchFn('Error sending email'));
   }
 }
 

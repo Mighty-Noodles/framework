@@ -21,7 +21,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch(controllerCatchFn('Error on signup', res));
+      .catch(controllerCatchFn('Error on signup', req, res));
   },
 
   confirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -38,7 +38,7 @@ export const AuthController = {
           });
         }
       })
-      .catch(controllerCatchFn('Error on signup confirmation', res));
+      .catch(controllerCatchFn('Error on signup confirmation', req, res));
   },
 
   login: (req: Request, res: Response, next: NextFunction): void => {
@@ -85,7 +85,7 @@ export const AuthController = {
       .then(() => {
         res.status(200).json({ message: 'An email with a password reset link was sent to your inbox' });
       })
-      .catch(controllerCatchFn('Error on reset password request', res));
+      .catch(controllerCatchFn('Error on reset password request', req, res));
   },
 
   reset_password: async (req: Request, res: Response): Promise<void> => {
@@ -98,7 +98,7 @@ export const AuthController = {
       .then((user) => {
         res.status(200).json({ item: user.toJson() });
       })
-      .catch(controllerCatchFn('Error on reset password', res));
+      .catch(controllerCatchFn('Error on reset password', req, res));
   },
 
   preLaunchSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -108,7 +108,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch(controllerCatchFn('Error on pre-launch signup', res));
+      .catch(controllerCatchFn('Error on pre-launch signup', req, res));
   },
 
   earlyAccessSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -118,7 +118,7 @@ export const AuthController = {
           item: user.toJson(),
         });
       })
-      .catch(controllerCatchFn('Error on early access signup', res));
+      .catch(controllerCatchFn('Error on early access signup', req, res));
   },
 
   earlyAccessConfirmSignup: async (req: AuthRequest, res: Response): Promise<void> => {
@@ -137,7 +137,7 @@ export const AuthController = {
           token,
         });
       })
-      .catch(controllerCatchFn('Error on early access signup confirmation', res));
+      .catch(controllerCatchFn('Error on early access signup confirmation', req, res));
   },
 };
 

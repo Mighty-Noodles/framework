@@ -20,6 +20,6 @@ export const ProfileController = {
         const response = update || req.user
         res.status(200).json({ item: response.toJson() });
       })
-      .catch(controllerCatchFn('Error updating user', res));
+      .catch(controllerCatchFn('Error updating user', req, res));
   },
 }
